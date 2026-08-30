@@ -1,7 +1,7 @@
-def cadastrarCliente():
+def cadastrarCliente(conta):
     nome = input('Nome Completo: ')
     cpf = input('Cpf: ')
-    cliente = (nome, cpf)
+    cliente = (nome, cpf, conta)
     
     return cliente
 
