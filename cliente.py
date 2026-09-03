@@ -1,7 +1,7 @@
-def cadastrarCliente(conta):
+def cadastrarCliente():
     nome = input('Nome Completo: ')
     cpf = input('Cpf: ')
-    cliente = (nome, cpf, conta)
+    cliente = (nome, cpf)
     
     return cliente
 
@@ -15,7 +15,3 @@ def validarCpf(cpf):
 
 cliente = cadastrarCliente()
 cpf = cliente[1]
-if validarCpf(cpf):
-    print('CPF Válido!')
-else:
-    print('CPF Inválido!')
