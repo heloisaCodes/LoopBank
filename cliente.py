@@ -1,4 +1,4 @@
-def cadastrarCliente():
+def cadastrarCliente(nome, cpf):
     cliente = (nome, cpf)
     
     return cliente
@@ -9,7 +9,3 @@ def validarCpf(cpf):
     else:
         return True
     
-
-
-cliente = cadastrarCliente()
-cpf = cliente[1]
