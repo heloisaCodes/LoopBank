@@ -1,6 +1,4 @@
 def cadastrarCliente():
-    nome = input('Nome Completo: ')
-    cpf = input('Cpf: ')
     cliente = (nome, cpf)
     
     return cliente
