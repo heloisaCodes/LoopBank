@@ -1,28 +1,27 @@
+def criar_conta(numerodaconta, senha, agencia=1234, saldo=100):
+    return {
+        "agencia": agencia,
+        "numerodaconta": numerodaconta,
+        "senha": senha,
+        "saldo": saldo
+    }
 
-def saque(saldoatual):
-    valordosaque = int(input("Digite o valor do saque: "))
-    
+def autenticar(conta, agenciadigitada, senhadigitada):
+    if conta["agencia"] != agenciadigitada:
+        return False
+    elif conta["senha"] != senhadigitada:
+        return False
+    else:
+        return True
+
+def saque(saldoatual, valordosaque):
     if saldoatual < valordosaque: 
-        print("Saldo Insuficiente")
         return saldoatual
     else:
-        novosaldo = saldoatual - valordosaque
-        print(f"Saque bem sucedido! Saldo atual: R${novosaldo}")
-        return novosaldo
+        return saldoatual - valordosaque
 
-
-def deposito(saldoatual):
-    valordodeposito = int(input("Digite o valor do deposito: "))
-
-    if valordodeposito <= 0 :
-       print("valor invalido")
-       return saldoatual 
+def deposito(saldoatual, valordodeposito):
+    if valordodeposito <= 0:
+        return saldoatual 
     else:
-        novosaldo = saldoatual + valordodeposito
-        print(f"Deposito bem sucedido! Saldo atual : R${novosaldo}")
-        return novosaldo
-
-
-saldo = 100
-saldo = saque(saldo)
-saldo = deposito(saldo)
+        return saldoatual + valordodeposito
