@@ -23,6 +23,21 @@ def deposito(saldoatual, valordodeposito):
         return saldoatual
     else:
         return saldoatual + valordodeposito
+
+def listarContas(contas):
+    listaContas = []
+    for conta in contas:
+        listaContas.append(conta)
+    return listaContas
+
+def transferir(contaOrigem, contaDestino, valor):
+    if contaOrigem[3] < valor:
+        return False
+    else:
+        contaOrigem[3] = contaOrigem[3] - valor
+        contaDestino[3] = contaDestino[3] + valor
+        return True
+
     
 
 
