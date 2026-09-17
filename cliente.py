@@ -52,28 +52,29 @@ def editarCliente(clientes, cpf, novoNome):
         return False
 
 def excluirCliente(cpf, clientes, contas):
-    cliente = procurarCliente(clientes, cpf) #procura o cliente e retorna o cliente
-    contasCliente = procurarConta(contas, cpf) # retorna a conta
+    cliente = procurarCliente(clientes, cpf) #retorna o cliente
+    contasCliente = procurarConta(contas, cpf) #retorna as contas
     if cliente:
-        contasSemSaldo = 0
+        contasSemSaldo = []
         contasComSaldo = 0
 
         for conta in contasCliente: #verifica cada conta do cliente
             if conta[3] != 0:
-                contasComSaldo += 1  #quantidade de contas com saldo
+                contasComSaldo += 1
             else:
-                contasSemSaldo += 1 #quantidade de contas sem saldo
-            
-        if contasComSaldo == 0: #nenhuma conta tem saldo
+                contasSemSaldo.append(conta)
+
+        if contasComSaldo == 0:  #nenhuma conta tem saldo
             clientes.remove(cliente) #exclui o cliente
-        else: #alguma conta tem saldo
-            for conta in contasSemSaldo: #desvincula o cliente das que não tem saldo
-                conta.remove(conta[4])
-                 
+            return True
+        else:  #alguma conta tem saldo
+            for conta in contasSemSaldo: 
+                conta.remove(conta[4]) #tira o cliente da conta
+
+            return True
+
     else:
-        return False # se o cliente não estiver cadastrado
-
-
+        return False
 
 def listarClientes(clientes):
     return clientes
