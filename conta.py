@@ -1,8 +1,15 @@
-def criar_conta(numerodaconta, senha, cpf, agencia=1234, saldo=0):
+def criar_conta(numerodaconta, senha, cpf, agencia, saldo=0):
     clientes = []
     clientes.append(cpf)
     conta = [agencia, numerodaconta, senha, saldo, clientes]
     return conta
+
+def cadastrarConta(contas, senha, cpf, agencia, saldo=0):
+    numerodaconta = len(contas) + 1
+    conta = criar_conta(numerodaconta, senha, cpf, agencia, saldo)
+    contas.append(conta)
+    return True
+# essa função ainda vai ser mudada, porque nao levei em consideraçao caso exclua o cliente que ja possui saldo
 
 def autenticar(conta, agenciadigitada, senhadigitada):
     if conta[0] != agenciadigitada:
@@ -25,10 +32,7 @@ def deposito(saldoatual, valordodeposito):
         return saldoatual + valordodeposito
 
 def listarContas(contas):
-    listaContas = []
-    for conta in contas:
-        listaContas.append(conta)
-    return listaContas
+    return contas
 
 def transferir(contaOrigem, contaDestino, valor):
     if contaOrigem[3] < valor:

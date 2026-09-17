@@ -1,15 +1,19 @@
 from procurar import procurarCliente, procurarConta
+from procurar import procurarCliente, procurarConta
 
 
+def cadastrarCliente(clientes, cpf, nome):
 def cadastrarCliente(clientes, cpf, nome):
     if procurarCliente(clientes, cpf): # Procurou o cliente e retornou o cliente (o cliente já está cadastrado)
         return False # Então não precisa continuar
     else: # Cadastro do cliente novo
         cliente = []
         cliente.append(cpf)
+        cliente.append(cpf)
         cliente.append(nome)
         clientes.append(cliente) # Adicona a lista clientes
         
+        return cliente
         return cliente
 
 
@@ -47,23 +51,34 @@ def editarCliente(clientes, cpf, novoNome):
     cliente = procurarCliente(clientes, cpf) # Associando a lista cliente retornada a variavel cliente
     if cliente: # Se o cliente existe
         cliente[1] = novoNome #Substitui o nome
+        cliente[1] = novoNome #Substitui o nome
         return True
     else:
         return False
-
 def excluirCliente(cpf, clientes, contas):
-    cliente = procurarCliente(clientes, cpf)
-    contasCliente = procurarConta(contas, cpf)
+    cliente = procurarCliente(clientes, cpf) #retorna o cliente
+    contasCliente = procurarConta(contas, cpf) #retorna as contas
     if cliente:
-        for conta in contasCliente:
-            if conta[3] == 0:
-                clientes.remove(cliente)
+        contasSemSaldo = []
+        contasComSaldo = 0
+
+        for conta in contasCliente: #verifica cada conta do cliente
+            if conta[3] != 0:
+                contasComSaldo += 1
             else:
-                return False
+                contasSemSaldo.append(conta)
+
+        if contasComSaldo == 0:  #nenhuma conta tem saldo
+            clientes.remove(cliente) #exclui o cliente
+            return True
+        else:  #alguma conta tem saldo
+            for conta in contasSemSaldo: 
+                conta.remove(conta[4]) #tira o cliente da conta
+
+            return True
+
     else:
         return False
-
-
 
 def listarClientes(clientes):
     return clientes
