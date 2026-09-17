@@ -1,16 +1,16 @@
-from procurar import procurarCliente
+from procurar import procurarCliente, procurarConta
 
 
-def cadastrarCliente(clientes, nome, cpf):
+def cadastrarCliente(clientes, cpf, nome):
     if procurarCliente(clientes, cpf): # Procurou o cliente e retornou o cliente (o cliente já está cadastrado)
         return False # Então não precisa continuar
     else: # Cadastro do cliente novo
         cliente = []
-        cliente.append(nome)
         cliente.append(cpf)
+        cliente.append(nome)
         clientes.append(cliente) # Adicona a lista clientes
         
-        return True
+        return cliente
 
 
 def validarCpf(cpf):
@@ -46,9 +46,37 @@ def validarCpf(cpf):
 def editarCliente(clientes, cpf, novoNome):
     cliente = procurarCliente(clientes, cpf) # Associando a lista cliente retornada a variavel cliente
     if cliente: # Se o cliente existe
-        cliente[0] = novoNome #Substitui o nome
+        cliente[1] = novoNome #Substitui o nome
         return True
     else:
         return False
-    
-#def excluirCliente():
+
+def excluirCliente(cpf, clientes, contas):
+    cliente = procurarCliente(clientes, cpf) #procura o cliente e retorna o cliente
+    contasCliente = procurarConta(contas, cpf) # retorna a conta
+    if cliente:
+        contasSemSaldo = 0
+        contasComSaldo = 0
+
+        for conta in contasCliente: #verifica cada conta do cliente
+            if conta[3] != 0:
+                contasComSaldo += 1  #quantidade de contas com saldo
+            else:
+                contasSemSaldo += 1 #quantidade de contas sem saldo
+            
+        if contasComSaldo == 0: #nenhuma conta tem saldo
+            clientes.remove(cliente) #exclui o cliente
+        else: #alguma conta tem saldo
+            for conta in contasSemSaldo: #desvincula o cliente das que não tem saldo
+                conta.remove(conta[4])
+                 
+    else:
+        return False # se o cliente não estiver cadastrado
+
+
+
+def listarClientes(clientes):
+    return clientes
+
+
+
