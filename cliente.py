@@ -1,20 +1,15 @@
 from procurar import procurarCliente, procurarConta
-from procurar import procurarCliente, procurarConta
 
-
-def cadastrarCliente(clientes, cpf, nome):
 def cadastrarCliente(clientes, cpf, nome):
     if procurarCliente(clientes, cpf): # Procurou o cliente e retornou o cliente (o cliente já está cadastrado)
         return False # Então não precisa continuar
     else: # Cadastro do cliente novo
         cliente = []
         cliente.append(cpf)
-        cliente.append(cpf)
         cliente.append(nome)
         clientes.append(cliente) # Adicona a lista clientes
         
-        return cliente
-        return cliente
+        return cliente 
 
 
 def validarCpf(cpf):
@@ -48,13 +43,13 @@ def validarCpf(cpf):
     return digito1 == int(cpf[9]) and digito2 == int(cpf[10])
 
 def editarCliente(clientes, cpf, novoNome):
-    cliente = procurarCliente(clientes, cpf) # Associando a lista cliente retornada a variavel cliente
+    cliente = procurarCliente(clientes, cpf) # cliente retornado
     if cliente: # Se o cliente existe
-        cliente[1] = novoNome #Substitui o nome
         cliente[1] = novoNome #Substitui o nome
         return True
     else:
         return False
+    
 def excluirCliente(cpf, clientes, contas):
     cliente = procurarCliente(clientes, cpf) #retorna o cliente
     contasCliente = procurarConta(contas, cpf) #retorna as contas
