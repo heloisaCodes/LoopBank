@@ -12,8 +12,8 @@ def cadastrar_agencia(codigo):
         agencias.append(codigo)
         return True
     else:
-        return False 
-    #essa parte avalia o tamanho do codigo e se os caracteres digitados são digitos
+        return False
+        #verifica se o o codigo da agência digitado está nos parametrôs
 
 def receberAgencia(clientes, cpf, agencias, contas):
     cliente = procurarCliente(clientes, cpf)

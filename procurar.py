@@ -1,4 +1,3 @@
-#procurarCliente
 def procurarCliente(clientes, cpf):
     for cliente in clientes: #para cada cliente na lista clientes
         if cliente[0] == cpf: #verifica se o cpf do cliente é igual ao cpf fornecido
