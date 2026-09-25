@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 def procurarCliente(clientes, cpf):
     for cliente in clientes: #para cada cliente na lista clientes
         if cliente[0] == cpf: #verifica se o cpf do cliente é igual ao cpf fornecido
@@ -11,3 +12,7 @@ def procurarAgencia(agencias, codigo):
             return agencia #retorna a agencia 
 
     return False
+=======
+# função procurarCliente
+# procurarContas
+>>>>>>> 9df903415140ee82f0c4df648cd0c10d2a94ad58

@@ -1,16 +1,13 @@
 from procurar import procurarCliente, procurarConta
 
-
 def cadastrarCliente(clientes, cpf, nome):
     if procurarCliente(clientes, cpf): # Procurou o cliente e retornou o cliente (o cliente já está cadastrado)
-        return False # Então não precisa continuar
-    else: # Cadastro do cliente novo
-        cliente = []
-        cliente.append(cpf)
-        cliente.append(nome)
-        clientes.append(cliente) # Adicona a lista clientes
+        return False                   # Então não precisa continuar
+    else:                              # Cadastro do cliente novo
+        cliente = (cpf, nome)
+        clientes.append(cliente)       # Adicona a lista clientes
         
-        return cliente
+        return cliente 
 
 
 def validarCpf(cpf):
@@ -44,32 +41,39 @@ def validarCpf(cpf):
     return digito1 == int(cpf[9]) and digito2 == int(cpf[10])
 
 def editarCliente(clientes, cpf, novoNome):
-    cliente = procurarCliente(clientes, cpf) # Associando a lista cliente retornada a variavel cliente
+    cliente = procurarCliente(clientes, cpf) #cliente retornado
+
     if cliente: # Se o cliente existe
-        cliente[1] = novoNome #Substitui o nome
+
+        for i in range(clientes):            #percorre a lista clientes
+            if clientes[i] == cliente:       #se o cliente atual da lista é igual ao cliente procurado
+                cliente[i] = (cpf, novoNome) #substitui a tupla antiga pela nova com o nome editado
+        
         return True
+    
     else:
         return False
-
+    
 def excluirCliente(cpf, clientes, contas):
-    cliente = procurarCliente(clientes, cpf) #retorna o cliente
-    contasCliente = procurarConta(contas, cpf) #retorna as contas
+    cliente = procurarCliente(clientes, cpf)    #retorna o cliente
+    contasCliente = procurarConta(contas, cpf)  #retorna as contas
     if cliente:
         contasSemSaldo = []
         contasComSaldo = 0
 
-        for conta in contasCliente: #verifica cada conta do cliente
-            if conta[3] != 0:
+        for conta in contasCliente:    #verifica cada conta do cliente
+            if conta[3] != 0:              #se a conta tiver saldo
                 contasComSaldo += 1
             else:
-                contasSemSaldo.append(conta)
+                contasSemSaldo.append(conta)    #adiciona a tupla a lista
 
-        if contasComSaldo == 0:  #nenhuma conta tem saldo
-            clientes.remove(cliente) #exclui o cliente
+        if contasComSaldo == 0:    #nenhuma conta tem saldo
+            clientes.remove(cliente)     #exclui o cliente
             return True
-        else:  #alguma conta tem saldo
+        
+        else:                             #alguma conta tem saldo
             for conta in contasSemSaldo: 
-                conta.remove(conta[4]) #tira o cliente da conta
+                conta.remove(conta[4])    #tira o cliente da conta
 
             return True
 
