@@ -56,16 +56,18 @@ def editarCliente(clientes, cpf, novoNome):
     
 def excluirCliente(cpf, clientes, contas):
     cliente = procurarCliente(clientes, cpf)    #retorna o cliente
-    contasCliente = procurarConta(contas, cpf)  #retorna as contas
+
     if cliente:
         contasSemSaldo = []
         contasComSaldo = 0
 
-        for conta in contasCliente:    #verifica cada conta do cliente
-            if conta[3] != 0:              #se a conta tiver saldo
-                contasComSaldo += 1
-            else:
-                contasSemSaldo.append(conta)    #adiciona a tupla a lista
+        for conta in contas:    #verifica cada conta
+            for clienteConta in conta[4]:    #verifica cada cliente da conta
+                if clienteConta[1] == cpf:    #se for o cliente procurado
+                    if conta[3] != 0:              #se a conta tiver saldo
+                        contasComSaldo += 1
+                    else:
+                        contasSemSaldo.append(conta)    #adiciona a conta
 
         if contasComSaldo == 0:    #nenhuma conta tem saldo
             clientes.remove(cliente)     #exclui o cliente
@@ -73,7 +75,7 @@ def excluirCliente(cpf, clientes, contas):
         
         else:                             #alguma conta tem saldo
             for conta in contasSemSaldo: 
-                conta.remove(conta[4])    #tira o cliente da conta
+                conta[4].remove(cliente)    #tira o cliente da conta
 
             return True
 
