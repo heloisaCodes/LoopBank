@@ -1,4 +1,4 @@
-from procurar import procurarCliente, procurarConta
+from procurar import procurarCliente, procurarAgencia
 
 def cadastrarCliente(clientes, cpf, nome):
     if procurarCliente(clientes, cpf): # Procurou o cliente e retornou o cliente (o cliente já está cadastrado)
