@@ -17,10 +17,10 @@ def teste_validarCpf(cpf):
     resultado = validarCpf('1782279007') #cpf com menos de 11 digitos
     assert resultado == False
 
-    resultado = validarCpf('178227900700') #cpf com mais de 12 digitos
+    resultado = validarCpf('178227900700') #cpf com mais de 11 digitos
     assert resultado == False
 
-    resultado = validarCpf('178.227.900-70') #cpf com caracteres nao numericos
+    resultado = validarCpf('18-27!0$7.0') #cpf com caracteres nao numericos
     assert resultado == False
 
     resultado = validarCpf('           ') #cpf vazio
@@ -60,15 +60,14 @@ def teste_excluirCliente_comsaldo(): #cliente existe e possui no minimo 1 conta 
 
 
 def teste_excluirCliente_errado():
-    cliente = ('17822790080', 'Heloísa')  
-    clientes = [cliente]
+    cliente = ('17822790080', 'Heloísa')  #dados do cliente
+    clientes = [cliente] #lista clientes
 
-    contas = ['0002', 102, '2587', 0, [cliente] ]
+    contas = ['0002', 102, '2587', 0, [cliente] ] #conta do cliente
 
-    resultado = excluirCliente('19040765057', clientes, contas)
-    assert resultado == False
-    assert cliente in clientes
-    print(clientes)
+    resultado = excluirCliente('19040765057', clientes, contas) #excluir um cliente que não existe
+    assert resultado == False #não da
+    assert cliente in clientes #cliente não foi excluido
 
 
 
