@@ -11,9 +11,16 @@ def cadastrarCliente(clientes, cpf, nome):
 
 
 def validarCpf(cpf):
+
+    #verifica se todos os caracteres são números / ib: duda
+    for caractere in cpf:
+            if caractere < "0" or caractere > "9":
+                return False
+            
     # Verifica se o cpf tem 11 caracteres ou se possui todos os dígitos iguais
     if len(cpf) != 11 or cpf == cpf[0] * 11:
         return False
+    
     # Acumuladores inicializados
     soma1 = 0
     soma2 = 0
