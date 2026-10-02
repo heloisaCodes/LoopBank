@@ -1,5 +1,5 @@
 def criar_conta(numerodaconta, senha, cpf, agencia, saldo=0):
-    clientes = [] #clientes precisa ser lista
+    clientes = [] # clientes precisa ser lista
     clientes.append(cpf)
 
     # conta agora vira dicionário
@@ -13,11 +13,32 @@ def criar_conta(numerodaconta, senha, cpf, agencia, saldo=0):
             
     return conta
 
+def excluirContasSemCliente(contas):
+     # uma funcao pra limpar contas sem clientes, ou seja, excluir a conta que nao tiver cliente
+    for conta in contas:
+            if not conta["clientes"]:
+                 # remover essa conta
+                 contas.remove(conta)
+
+    return contas      # retorna contas já atualizado
+
 
 def cadastrarConta(contas, senha, cpf, agencia, saldo=0):  # ou seja, pega a conta e coloca ela na lista geral de contas
-    # numero da conta é gerada na hora
-    numerodaconta = len(contas) + 1  # aqui serve como um contador 
+    if len(contas) == 0:     # se nao existe nehuma conta cadastrada ainda
+         numerodaconta = 1   # entao ela vai ser a primeira conta
+    else:
+        maior = 0
+        for conta in contas:
+            if conta["numerodaconta"] > maior:
+                maior = conta["numerodaconta"]
+        numerodaconta = maior + 1 
+
+            # ou seja, nessa parte ele vai percorrer toda a lista e achar o MAIOR valor do numero da conta
+            # depois, ele pega esse valor do MAIOR e soma com +1, o resultado é o proximo numero da conta
+
+     # aqui cria uma nova conta       
     conta = criar_conta(numerodaconta, senha, cpf, agencia, saldo=0)
+    # coloca ela na lista geral
     contas.append(conta)
     return True  # pra saber se o cadastro deu certo
 
@@ -39,6 +60,7 @@ def saque(saldoatual, valordosaque):
         return saldoatual                # ent retorna o saldo atual
     else:
         return saldoatual - valordosaque  # caso nao, retorna o saldo MENOS o valor do saque
+
 
 # nao permite depósito de valor 0 ou negativo 
 def deposito(saldoatual, valordodeposito):
