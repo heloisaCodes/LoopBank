@@ -1,19 +1,29 @@
-from procurar import procurarCliente, procurarAgencia
+from procurar import procurarCliente
 
 def cadastrarCliente(clientes, cpf, nome):
     if procurarCliente(clientes, cpf): # Procurou o cliente e retornou o cliente (o cliente já está cadastrado)
         return False                   # Então não precisa continuar
     else:                              # Cadastro do cliente novo
-        cliente = (cpf, nome)
+        cliente = {
+            'nome': nome,
+            'cpf': cpf
+        }
         clientes.append(cliente)       # Adicona a lista clientes
         
         return cliente 
 
 
 def validarCpf(cpf):
+
+    #verifica se todos os caracteres são números / ib: duda
+    for caractere in cpf:
+            if caractere < "0" or caractere > "9":
+                return False
+            
     # Verifica se o cpf tem 11 caracteres ou se possui todos os dígitos iguais
     if len(cpf) != 11 or cpf == cpf[0] * 11:
         return False
+    
     # Acumuladores inicializados
     soma1 = 0
     soma2 = 0
@@ -47,7 +57,7 @@ def editarCliente(clientes, cpf, novoNome):
 
         for i in range(clientes):            #percorre a lista clientes
             if clientes[i] == cliente:       #se o cliente atual da lista é igual ao cliente procurado
-                cliente[i] = (cpf, novoNome) #substitui a tupla antiga pela nova com o nome editado
+                cliente['nome'] = novoNome #substitui o nome antigo pelo novo
         
         return True
     
@@ -61,9 +71,9 @@ def excluirCliente(cpf, clientes, contas):
         contasComSaldo = 0
 
         for conta in contas:    #verifica cada conta
-            for clienteConta in conta[4]:    #verifica cada cliente da conta
-                if clienteConta[0] == cpf:    #se  for o cliente procurado
-                    if conta[3] != 0:         #verifica quantas contas dele possuem saldo
+            for clienteConta in conta['clientes']:    #verifica cada cliente da conta
+                if clienteConta['cpf'] == cpf:    #se  for o cliente procurado
+                    if conta['saldo'] != 0:         #verifica quantas contas dele possuem saldo
                         contasComSaldo += 1
 
         if contasComSaldo == 0:    #nenhuma conta tem saldo

@@ -17,10 +17,10 @@ def teste_validarCpf(cpf):
     resultado = validarCpf('1782279007') #cpf com menos de 11 digitos
     assert resultado == False
 
-    resultado = validarCpf('178227900700') #cpf com mais de 12 digitos
+    resultado = validarCpf('178227900700') #cpf com mais de 11 digitos
     assert resultado == False
 
-    resultado = validarCpf('178.227.900-70') #cpf com caracteres nao numericos
+    resultado = validarCpf('18-27!0$7.0') #cpf com caracteres nao numericos
     assert resultado == False
 
     resultado = validarCpf('           ') #cpf vazio
@@ -34,11 +34,26 @@ def teste_validarCpf(cpf):
 def teste_excluirCliente_semsaldo(): #cliente existe e não tem saldo em nenhuma conta
 
     #começo fornecendo os dados que a função precisa para funcionar
-    cliente = ('17822790080', 'Heloísa')  
-    cliente2 = ('19040765057', 'Eduarda')
+    cliente = {
+                'cpf': '17822790080',  #dados do cliente
+                 'nome':'Heloísa'
+                 }    
+
+    cliente2 = {
+                'cpf': '19040765057',  #dados do cliente
+                 'nome':'Eduarda'
+                 }    
+    
     clientes = [cliente, cliente2]
 
-    conta = ['0001', 101, '1234', 0, [cliente, cliente2]] #testando com conta conjunta
+    conta = {
+                'agencia':'0002',
+                'numero da conta': '102',
+                'senha': '2587',
+                'saldo': 0,                     #conta conjunta
+                'clientes': [cliente, cliente2]
+                }  
+    
     contas = [conta]
 
     resultado = excluirCliente('17822790080', clientes, contas) #chamo a função 
@@ -47,11 +62,27 @@ def teste_excluirCliente_semsaldo(): #cliente existe e não tem saldo em nenhuma
  
 
 def teste_excluirCliente_comsaldo(): #cliente existe e possui no minimo 1 conta com saldo
-    cliente = ('17822790080', 'Heloísa')  
+    cliente = {
+            'cpf': '17822790080',  #dados do cliente
+             'nome':'Heloísa'
+             }    
     clientes = [cliente]
 
-    conta = ['0001', 101, '1234', 500, [cliente]] 
-    conta2 = ['0002', 102, '2587', 0, [cliente] ] #cliente posssui duas contas
+    conta = {
+            'agencia':'0001',
+            'numero da conta': '101',
+            'senha': '1234',          # primeira conta do cliente
+            'saldo': 500,
+            'clientes': [cliente]
+            } 
+    
+    conta2 = {
+            'agencia':'0002',
+            'numero da conta': '102',
+            'senha': '2587',          # segunda conta do cliente
+            'saldo': 0,
+            'clientes': [cliente]
+            } 
     contas = [conta, conta2]
 
     resultado = excluirCliente('17822790080', clientes, contas)
@@ -60,15 +91,24 @@ def teste_excluirCliente_comsaldo(): #cliente existe e possui no minimo 1 conta 
 
 
 def teste_excluirCliente_errado():
-    cliente = ('17822790080', 'Heloísa')  
-    clientes = [cliente]
+    cliente = {
+        'cpf': '17822790080',  #dados do cliente
+         'nome':'Heloísa'
+         }  
+    clientes = [cliente] #lista clientes
 
-    contas = ['0002', 102, '2587', 0, [cliente] ]
+    conta = {
+        'agencia':'0002',
+        'numero da conta': '102',
+        'senha': '2587',          #conta do cliente
+        'saldo': 0,
+        'clientes': [cliente]
+        } 
+    contas = [conta]
 
-    resultado = excluirCliente('19040765057', clientes, contas)
-    assert resultado == False
-    assert cliente in clientes
-    print(clientes)
+    resultado = excluirCliente('19040765057', clientes, contas) #excluir um cliente que não existe
+    assert resultado == False #não da
+    assert cliente in clientes #cliente não foi excluido
 
 
 
