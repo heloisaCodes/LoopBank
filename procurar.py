@@ -1,6 +1,6 @@
 def procurarCliente(clientes, cpf):
     for cliente in clientes: # para cada cliente na lista clientes
-        if cliente[0] == cpf: # verifica se o cpf do cliente é igual ao cpf fornecido
+        if cliente['cpf'] == cpf: # verifica se o cpf do cliente é igual ao cpf fornecido
             return cliente # se sim, retorna o cliente
 
     return False
@@ -14,7 +14,7 @@ def procurarAgencia(agencias, codigo):
 
 def procurarPorCpf(contas, cpfbuscado):
     for conta in contas:                    #procura por conta dentro das contas 
-        if cpfbuscado in conta["clientes"]: #verifica o cpf buscado dentro da conta em clientes 
+        if cpfbuscado in conta['clientes']: #verifica o cpf buscado dentro da conta em clientes 
             return conta                     #se achar retorna conta
 
     return False
