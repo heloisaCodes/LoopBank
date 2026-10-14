@@ -55,7 +55,7 @@ def editarCliente(clientes, cpf, novoNome):
 
     if cliente: # Se o cliente existe
 
-        for i in range(clientes):            #percorre a lista clientes
+        for i in range(len(clientes)):            #percorre a lista clientes
             if clientes[i] == cliente:       #se o cliente atual da lista é igual ao cliente procurado
                 cliente['nome'] = novoNome #substitui o nome antigo pelo novo
         
