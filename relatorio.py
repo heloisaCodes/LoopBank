@@ -1,7 +1,5 @@
 from conta import listarContas
 
-
-
 def montanteBanco(contas):
     montanteSaldo = 0
     contas = listarContas(contas)    #lista de todas as contas
@@ -44,7 +42,9 @@ def montanteAgencia(contas, agencias):     #pega a lista agencias
             maiorQuantClientes = quantClientes
             
     return resultados, agenciaMaior
-        
+
+
+
 
     
 
