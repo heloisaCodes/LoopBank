@@ -79,7 +79,7 @@ def menorSaldo (contas):
     return menor
 
 
-        
+    
 
     
 
