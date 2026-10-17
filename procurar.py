@@ -12,9 +12,9 @@ def procurarAgencia(agencias, codigo):
 
     return False
 
-def procurarPorCpf(contas, cpfbuscado):
+def procurarPorCpf(contas, cpf):
     for conta in contas:                    #procura por conta dentro das contas 
-        if cpfbuscado in conta['clientes']: #verifica o cpf buscado dentro da conta em clientes 
+        if cpf in conta['clientes']: #verifica o cpf buscado dentro da conta em clientes 
             return conta                     #se achar retorna conta
 
     return False

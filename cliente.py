@@ -86,8 +86,4 @@ def excluirCliente(cpf, clientes, contas):
     else:
         return False
 
-def listarClientes(clientes):
-    return clientes
-
-
 

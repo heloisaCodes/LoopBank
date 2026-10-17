@@ -45,10 +45,8 @@ def cadastrarConta(contas, senha, cpf, agencia, saldo=0):  # ou seja, pega a con
     
 
 # aqui vamos ver se a senha e a agencia digitadas estão corretas
-def autenticar(conta, agenciadigitada, senhadigitada):
-    if conta["agencia"] != agenciadigitada:  
-        return False
-    elif conta["senha"] != senhadigitada:   
+def autenticar(conta, senhadigitada):
+    if conta["senha"] != senhadigitada:   
         return False
     else:                          # ou seja, se nenhuma delas estiver errada, vai ser retornado True
         return True   
