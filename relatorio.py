@@ -44,6 +44,45 @@ def montanteAgencia(contas, agencias):     #pega a lista agencias
             maiorQuantClientes = quantClientes
             
     return resultados, agenciaMaior
+
+def gerarDashboard(clientes, contas):     #pega os clientes e as contas
+  totalClientes = len(clientes)             
+  totalContas = len(contas)               #descobre o total de cliente e contas 
+
+  if totalContas == 0:                    #se o total de contas for 0 automáticamente já define os valores como 0 
+    totalSaldo = 0.0
+    maiorSaldo = 0.0
+    saldoMedio = 0.0
+
+  else:
+    saldos = [conta['saldo'] for conta in contas]       #percorre contas nos dicionarios com a chave saldo 
+
+    
+    totalSaldo = reduce(lambda acumulador, x: acumulador + x, saldos)  #função de alta ordem usando reduce 
+
+    
+    maiorSaldo = reduce(lambda a, b: a if a > b else b, saldos)     #retorna o maior valor entre a e b 
+
+    saldoMedio = totalSaldo / totalContas       #faz a divisão para descobrir o saldo medio 
+
+  print("=" * 40)
+  print("      DASHBOARD FINANCEIRO LOOPBANK     ")
+  print("=" * 40)
+  print(f"Número de clientes cadastrados : {totalClientes}")                    #organização do dashboard
+  print(f"Número de contas ativas        : {totalContas}")
+  print(f"Saldo total no banco       : R$ {totalSaldo:,.2f}")
+  print(f"Maior saldo individual         : R$ {maiorSaldo:,.2f}")
+  print(f"Saldo médio por conta          : R$ {saldoMedio:,.2f}")
+  print("=" * 40)
+
+  return {                            #retorna o que foi calculado 
+      'totalClientes': totalClientes,
+      'totalContas': totalContas,
+      'totalSaldo': totalSaldo,
+      'maiorSaldo': maiorSaldo,
+      'saldoMedio': saldoMedio,
+  }
+
         
 
     
