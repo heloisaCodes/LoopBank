@@ -6,7 +6,7 @@ def criarContaPoupanca(conta):
     #e suas propiedades unicas
     conta['taxa'] = 0.005 
     conta['dataAbertura'] = '2026-09-02'
-    conta['ultimoRendimneto'] = '2026-10-02'
+    conta['ultimoRendimento'] = '2026-10-02'
 
     return conta
 

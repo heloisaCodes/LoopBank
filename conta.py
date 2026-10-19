@@ -13,15 +13,16 @@ def criar_conta(numerodaconta, senha, cpf, agencia, saldo=0):
             
     return conta
 
-def excluirContasSemCliente(contas):
-     # uma funcao pra limpar contas sem clientes, ou seja, excluir a conta que nao tiver cliente
-    for conta in contas:
-            if not conta["clientes"]:
-                 # remover essa conta
-                 contas.remove(conta)
+def excluirContasSemCliente(contasCliente, cpf):
+    for conta in contasCliente:  #para cada conta do cliente
+        if cpf in conta['clientes']:  #se o cpf do cliente estiver na lista de clientes da conta
+            conta['clientes'].remove(cpf) #remove o cliente da conta
 
-    return contas      # retorna contas já atualizado
+    for conta in contasCliente[:]: #pecorre a copia
+        if len(conta['clientes']) == 0: #se a conta nao tiver mais clientes
+            contasCliente.remove(conta) #apaga a conta do cliente da lista geral de contas
 
+    return contasCliente
 
 def cadastrarConta(contas, senha, cpf, agencia, saldo=0):  # ou seja, pega a conta e coloca ela na lista geral de contas
     if len(contas) == 0:     # se nao existe nehuma conta cadastrada ainda
@@ -29,14 +30,16 @@ def cadastrarConta(contas, senha, cpf, agencia, saldo=0):  # ou seja, pega a con
     else:
         maior = 0
         for conta in contas:
-            if conta["numerodaconta"] > maior:
-                maior = conta["numerodaconta"]
+            if type(conta) == dict and "numerodaconta" in conta:
+                if int(conta["numerodaconta"]) > maior:
+                    maior = int(conta["numerodaconta"])
+
         numerodaconta = maior + 1 
 
             # ou seja, nessa parte ele vai percorrer toda a lista e achar o MAIOR valor do numero da conta
             # depois, ele pega esse valor do MAIOR e soma com +1, o resultado é o proximo numero da conta
 
-     # aqui cria uma nova conta       
+     # aqui cria uma nova conta
     conta = criar_conta(numerodaconta, senha, cpf, agencia, saldo=0)
     # coloca ela na lista geral
     contas.append(conta)

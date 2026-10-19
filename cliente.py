@@ -1,4 +1,5 @@
 from procurar import procurarCliente
+from conta import excluirContasSemCliente
 
 def cadastrarCliente(clientes, cpf, nome):
     if procurarCliente(clientes, cpf): # Procurou o cliente e retornou o cliente (o cliente já está cadastrado)
@@ -72,11 +73,12 @@ def excluirCliente(cpf, clientes, contas):
 
         for conta in contas:    #verifica cada conta
             for clienteConta in conta['clientes']:    #verifica cada cliente da conta
-                if clienteConta['cpf'] == cpf:    #se  for o cliente procurado
+                if clienteConta == cpf:   #se  for o cliente procurado
                     if conta['saldo'] != 0:         #verifica quantas contas dele possuem saldo
                         contasComSaldo += 1
 
         if contasComSaldo == 0:    #nenhuma conta tem saldo
+            excluirContasSemCliente(contas, cpf)
             clientes.remove(cliente)    #exclui o cliente
             return True
         

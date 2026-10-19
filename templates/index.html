@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root{--roxo:#5b2fd6;--roxo-escuro:#3b1fa8;--titulo:#2d1b9a;--texto:#4b3fa0;--suave:#8374c9;--borda:#ddd5f7;--rosa:#fbeaf8;--rosa-texto:#b0269f}
+*{box-sizing:border-box;margin:0}
+body{position:relative;overflow-x:hidden;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--texto);background:linear-gradient(180deg,#fcfbff 0%,#f3eeff 100%);min-height:100vh;display:flex;flex-direction:column;line-height:1.5}
+body::before,body::after{content:"";position:fixed;bottom:-70px;width:420px;height:230px;background:#e9e1ff;opacity:.75;z-index:-1}
+body::before{left:-140px;border-radius:0 70% 0 0}
+body::after{right:-140px;border-radius:70% 0 0 0}
+a{color:var(--roxo);text-decoration:none}
+:focus-visible{outline:3px solid #a78bfa;outline-offset:2px}
+.container{width:100%;max-width:1100px;margin:0 auto;padding:0 24px}
+.topo{background:#fff;border-bottom:1px solid #f0ebff}
+.barra{display:flex;justify-content:space-between;align-items:center;height:68px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.3rem;color:var(--titulo)}
+.logo svg{width:30px;height:30px}
+.nav{display:flex;align-items:center;gap:26px;font-size:.82rem;font-weight:600}
+.voltar{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:500}
+.voltar svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.botao{display:inline-block;padding:12px 30px;border-radius:7px;border:1.5px solid var(--roxo);background:var(--roxo);color:#fff;font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center}
+.botao:hover{background:var(--roxo-escuro)}
+.botao.contorno{background:#fff;color:var(--roxo)}
+.botao.contorno:hover{background:#f1ecff}
+.botao.pequeno{padding:8px 18px;font-size:.8rem}
+.selo{display:inline-block;padding:3px 12px;border:1.5px solid var(--roxo);border-radius:99px;background:#fff;color:var(--titulo);font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+h1{color:var(--titulo);font-size:clamp(2.2rem,5vw,3.1rem);line-height:1.08;margin:16px 0 14px}
+.hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:24px;padding-top:36px;padding-bottom:28px}
+.hero p{font-size:1.05rem;max-width:30ch}
+.acoes{display:flex;gap:16px;flex-wrap:wrap;margin-top:26px}
+.hero-arte svg{display:block;width:100%;height:auto;max-height:380px}
+.recursos{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:56px}
+.recurso{display:flex;align-items:center;gap:16px;padding:22px;background:rgba(255,255,255,.65);border:1px solid #ebe5ff;border-radius:8px}
+.circulo{flex:none;width:48px;height:48px;border-radius:50%;background:#efeaff;display:grid;place-items:center;color:var(--roxo)}
+.circulo svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.recurso h3{color:var(--titulo);font-size:.95rem}
+.recurso p{font-size:.82rem;color:var(--suave)}
+.rodape{margin-top:auto;background:#fff;border-top:1px solid #f0ebff;font-size:.72rem;color:var(--suave)}
+.rodape .container{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;min-height:52px}
+.rodape nav{display:flex}
+.rodape nav a+a{border-left:1px solid var(--borda);margin-left:16px;padding-left:16px}
+.auth{flex:1;display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:48px;padding-top:44px;padding-bottom:56px}
+.auth h1{font-size:clamp(1.9rem,4vw,2.3rem);margin:14px 0 8px}
+.auth .texto p{font-size:.88rem}
+.ilustracao{margin-top:24px;max-width:340px}
+.ilustracao svg{display:block;width:100%;height:auto}
+.coluna{max-width:470px;width:100%;justify-self:end}
+.cartao{background:#fff;border:1px solid var(--borda);border-radius:12px;padding:24px}
+.coluna .voltar{margin-top:20px}
+.aviso{display:flex;align-items:center;gap:8px;padding:12px 14px;margin-bottom:18px;border-radius:6px;background:var(--rosa);color:var(--rosa-texto);font-size:.78rem}
+.aviso svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:2}
+label{display:block;margin:0 0 6px;color:var(--titulo);font-size:.78rem;font-weight:700}
+.campo{position:relative;margin-bottom:16px}
+.campo>svg{position:absolute;left:12px;top:50%;width:15px;height:15px;transform:translateY(-50%);fill:none;stroke:var(--suave);stroke-width:2;pointer-events:none}
+.campo input{width:100%;height:42px;padding:0 40px;border:1px solid var(--borda);border-radius:6px;font-family:inherit;font-size:.8rem;color:var(--titulo);background:#fff}
+.campo input::placeholder{color:#a99fd6}
+.campo input:focus{outline:none;border-color:var(--roxo);box-shadow:0 0 0 3px #e4dcff}
+.olho{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;background:none;color:var(--suave);cursor:pointer}
+.olho svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2}
+.olho .fechado,.olho[aria-pressed="true"] .aberto{display:none}
+.olho[aria-pressed="true"] .fechado{display:inline}
+.cartao .botao{width:100%;margin-top:4px;padding:11px}
+.troca{text-align:center;font-size:.78rem;margin-top:18px}
+.troca a{text-decoration:underline}
+@media(max-width:820px){.hero,.auth{grid-template-columns:1fr}.hero-arte{order:-1}.recursos{grid-template-columns:1fr}.auth{gap:28px}.coluna{justify-self:center}.ilustracao{max-width:260px}}
+</style>
+  <title>LoopBank | Seu banco, seu ritmo</title>
+</head>
+<body>
+  <header class="topo"><div class="container barra">
+    <a class="logo" href="{{ url_for('inicio') }}"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#3b1fa8"/><path d="M16 7.5a8.5 8.5 0 1 0 8.5 8.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><circle cx="21.5" cy="10.5" r="2.4" fill="#a78bfa"/></svg> LoopBank</a>
+    <nav class="nav">
+      <a href="{{ url_for('entrarConta') }}">Login</a>
+      <a class="botao contorno pequeno" href="{{ url_for('cadastroCliente') }}">Criar uma conta</a>
+    </nav>
+  </div></header>
+
+  <main>
+    <section class="hero container">
+      <div>
+        <span class="selo">Seu dinheiro, seu ritmo</span>
+        <h1>Seu banco,<br>seu ritmo.</h1>
+        <p>Mais praticidade, controle e liberdade para o seu dia a dia.</p>
+        <div class="acoes">
+          <a class="botao" href="{{ url_for('entrarConta') }}">Entrar</a>
+          <a class="botao contorno" href="{{ url_for('cadastroCliente') }}">Criar uma conta</a>
+        </div>
+      </div>
+      <div class="hero-arte"><svg viewBox="0 0 520 400" aria-hidden="true"><defs><symbol id="b" viewBox="-12 -12 24 24"><path d="M0-12Q0 0 12 0Q0 0 0 12Q0 0-12 0Q0 0 0-12Z"/></symbol></defs>
+<ellipse cx="290" cy="215" rx="215" ry="165" fill="#ebe4ff"/>
+<g transform="rotate(8 250 190)"><rect x="160" y="30" width="180" height="310" rx="28" fill="#f5f1ff" stroke="#5b2fd6" stroke-width="6"/><rect x="172" y="42" width="156" height="286" rx="20" fill="#ece6ff"/><circle cx="250" cy="140" r="24" fill="#3b1fa8"/><path d="M250 126a14 14 0 1 0 14 14" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>
+<g transform="rotate(-12 125 150)"><rect x="100" y="125" width="52" height="52" rx="12" fill="#9f84f5"/><path d="M114 163v-10M126 163v-20M138 163v-14" stroke="#fff" stroke-width="6" stroke-linecap="round"/></g>
+<g transform="rotate(-20 360 270)"><rect x="240" y="205" width="230" height="140" rx="16" fill="#4527c8"/><rect x="258" y="228" width="38" height="28" rx="6" fill="#d8ccff"/><path d="M430 235q8 8 0 16M440 230q12 13 0 26" fill="none" stroke="#c9b8ff" stroke-width="3" stroke-linecap="round"/><rect x="258" y="275" width="70" height="7" rx="3.5" fill="#7c5cf0"/><text x="452" y="330" text-anchor="end" fill="#fff" font-size="22" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">LoopBank</text></g>
+<ellipse cx="280" cy="255" rx="205" ry="55" transform="rotate(-22 280 255)" fill="none" stroke="#7c5cf0" stroke-width="2"/>
+<path d="M395 75q60-12 85 28" fill="none" stroke="#7c5cf0" stroke-width="2" stroke-linecap="round"/>
+<use href="#b" x="420" y="35" width="24" height="24" fill="#a78bfa"/><use href="#b" x="85" y="215" width="20" height="20" fill="#c9b8ff"/><use href="#b" x="120" y="60" width="16" height="16" fill="#f0a6d8"/><use href="#b" x="455" y="195" width="14" height="14" fill="#c9b8ff"/></svg></div>
+    </section>
+
+    <section class="recursos container" aria-label="Vantagens">
+      <article class="recurso"><div class="circulo"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div><div><h3>Praticidade</h3><p>Consulte suas informações de forma simples.</p></div></article>
+      <article class="recurso"><div class="circulo"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></div><div><h3>Organização</h3><p>Acompanhe suas contas em um só lugar.</p></div></article>
+      <article class="recurso"><div class="circulo"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/></svg></div><div><h3>Do seu jeito</h3><p>Uma experiência feita para você.</p></div></article>
+    </section>
+  </main>
+
+  <footer class="rodape"><div class="container">
+    <span>LoopBank © 2026. Todos os direitos reservados.</span>
+    <nav><a href="#">Sobre</a><a href="#">Ajuda</a><a href="#">Contato</a></nav>
+  </div></footer>
+</body>
+</html>

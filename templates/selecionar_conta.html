@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecionar conta | LoopBank</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6fc;
+            color: #282844;
+            min-height: 100vh;
+        }
+
+        header {
+            background: white;
+            padding: 22px 8%;
+            border-bottom: 1px solid #e7e7f0;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #6957d9;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 55px auto;
+            padding: 0 24px;
+        }
+
+        .cabecalho {
+            margin-bottom: 30px;
+        }
+
+        .cabecalho h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .cabecalho p {
+            color: #77778c;
+            line-height: 1.5;
+        }
+
+        .contas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 22px;
+        }
+
+        .cartao {
+            background: white;
+            border: 1px solid #e5e5ef;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(40, 40, 68, 0.04);
+        }
+
+        .tipo {
+            color: #77778c;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .numero {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            overflow-wrap: anywhere;
+        }
+
+        .detalhe {
+            color: #77778c;
+            font-size: 14px;
+            margin-bottom: 17px;
+        }
+
+        .detalhe strong {
+            display: block;
+            color: #282844;
+            font-size: 16px;
+            margin-top: 6px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin: 20px 0 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #dcdcea;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: 2px solid #c9c1ff;
+            border-color: #6957d9;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 14px;
+            padding: 13px;
+            border: none;
+            border-radius: 9px;
+            background: #6957d9;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #5543c4;
+        }
+
+        .erro {
+            background: #fff0f0;
+            color: #b42332;
+            padding: 14px;
+            border-radius: 9px;
+            margin-bottom: 22px;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                margin-top: 35px;
+            }
+
+            .cabecalho h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">LoopBank</div>
+    </header>
+
+    <main>
+        <section class="cabecalho">
+            <h1>Olá, {{ cliente.nome }}!</h1>
+            <p>Escolha qual conta deseja acessar.</p>
+        </section>
+
+        {% if erro %}
+            <div class="erro">{{ erro }}</div>
+        {% endif %}
+
+        <section class="contas">
+            {% for conta in contas %}
+                <article class="cartao">
+                    <p class="tipo">Sua conta LoopBank</p>
+
+                    <p class="numero">
+                        Conta {{ conta.numerodaconta }}
+                    </p>
+
+                    <p class="detalhe">
+                        Agência
+                        <strong>{{ conta.agencia }}</strong>
+                    </p>
+
+                    <p class="detalhe">
+                        Saldo disponível
+                        <strong>
+                            R$ {{ "%.2f"|format(conta.saldo|float) }}
+                        </strong>
+                    </p>
+
+                    <form action="{{ url_for('selecionarConta') }}"
+                          method="POST">
+
+                        <input type="hidden"
+                               name="cpf"
+                               value="{{ cliente.cpf }}">
+
+                        <input type="hidden"
+                               name="numeroConta"
+                               value="{{ conta.numerodaconta }}">
+
+                        <label for="senha-{{ loop.index }}">
+                            Senha da conta
+                        </label>
+
+                        <input type="password"
+                               id="senha-{{ loop.index }}"
+                               name="senha"
+                               placeholder="Digite a senha"
+                               required>
+
+                        <button type="submit">
+                            Acessar conta
+                        </button>
+                    </form>
+                </article>
+            {% endfor %}
+        </section>
+    </main>
+</body>
+</html>

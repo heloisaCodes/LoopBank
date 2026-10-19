@@ -13,11 +13,12 @@ def procurarAgencia(agencias, codigo):
     return False
 
 def procurarPorCpf(contas, cpf):
+    contasCliente = [] #cria uma lista vazia para armazenar as contas do cliente
     for conta in contas:                    #procura por conta dentro das contas 
         if cpf in conta['clientes']: #verifica o cpf buscado dentro da conta em clientes 
-            return conta                     #se achar retorna conta
+            contasCliente.append(conta) #adiciona a conta à lista
 
-    return False
+    return contasCliente
 
 def procurarPorConta(contas, numerodacontadigitado):
     for conta in contas:                                    #procura por conta dentro das contas 

@@ -42,6 +42,5 @@ def receberAgencia(clientes, cpf, agencias, contas):    #maneira de encontrar qu
     soma = int(cpf[0]) + int(cpf[1])
     for agencia in agencias:
         if int(agencia) == soma:
-            contas.append(agencia)
-            return True
+            return agencia
     return False
