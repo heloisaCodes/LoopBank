@@ -9,11 +9,26 @@ from relatorio import gerarDashboard
 from conta_corrente import criarContaCorrente
 from conta_poupanca import criarContaPoupanca
 from conta_salario import criarContaSalario
+from relatorio import (
+    montanteBanco,
+    montanteAgencia,
+    maiorSaldo,
+    menorSaldo
+)
 from functools import reduce
 
 
 
+
 app = Flask(__name__) #cria a aplicação web
+
+#aqui é o filtro pra mostrar dinheiro no formato brasileiro
+@app.template_filter("brl")
+def brl(valor):
+    texto = f"{valor:,.2f}"      #1234.5 vira "1,234.50" (formato americano)
+    #troca a virgula por X, o ponto por virgula e o X por ponto,   ex: "1.234,50"
+    return texto.replace(",", "X").replace(".", ",").replace("X", ".")
+
 
 # Nome do arquivo onde os dados serão salvos
 ARQUIVO_DADOS = 'dados.json'
@@ -23,8 +38,15 @@ def carregar_dados():
     """Lê a lista de clientes e contas salva no arquivo JSON."""
     if os.path.exists(ARQUIVO_DADOS):
         with open(ARQUIVO_DADOS, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {"clientes" : [], "contas" : []}
+            conteudo = f.read().strip()
+
+            if not conteudo:
+                return {"clientes" : [], "contas" : []}
+            return json.loads(conteudo)
+    return {"clientes": [],
+            "contas": []}
+#essa função foi adaptada pra evitar que um arquivo vazio cause algum erro no futuro 
+
 
 # Função para salvar clientes e contas em um arquivo JSON
 def salvar_dados(dados):
@@ -257,4 +279,39 @@ def dashboard_gerente():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+@app.route('/relatorio')   #rota de relatorio
+#carrega os dados salvos e pega a lista de contas
+def pagina_relatorio():
+    dados_relatorio = carregar_dados()
+    contas_relatorio = dados_relatorio.get('contas', [])
+
+    #calcula os numeros do resumo do banco
+    montante_banco = montanteBanco(contas_relatorio)  #soma de todos os saldos
+    maior_saldo = maiorSaldo(contas_relatorio)        #maior saldo entre as contas
+    menor_saldo = menorSaldo(contas_relatorio)        #menor saldo entre as contas
+
+    #calcula, por agencia, a quantidade de clientes e o montante
+    #o montante é o que vira o tamanho de cada barra no grafico
+    if agencias:
+        resultados_agencias, agencia_maior = montanteAgencia(
+            contas_relatorio, agencias
+        )
+    else:
+        resultados_agencias = []   #sem agencias cadastradas, o relatorio mostra as mensagens de "vazio"
+        agencia_maior = None
+
+    #manda tudo pra o gerente.html desenhar a pagina
+    return render_template(
+        'gerente.html',
+        montante_banco=montante_banco,
+        maior_saldo=maior_saldo,
+        menor_saldo=menor_saldo,
+        resultados_agencias=resultados_agencias,
+        agencia_maior=agencia_maior
+    )
+
+
 
