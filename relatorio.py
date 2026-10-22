@@ -19,16 +19,19 @@ def montanteAgencia(contas, agencias):     #pega a lista agencias
     for agencia in agencias:     # para cada agencia da lista agencias
 
         contadorAgencia = 0
+        montante = 0   #agora cada agencia também devolve o "montante" em dinheiro
 
         for conta in contas:    #ler as contas
             if conta["agencia"] == agencia:    #se a agencia da conta atual for a mesma da agencia lida no momento
                 quantClientes = len(conta["clientes"])    #pega a quatidade de clientes vinculados aquela conta
                 contadorAgencia += quantClientes    #soma isso a quantidade de clientes da agencia
             # faz isso para todas as contas
+                montante += conta["saldo"]     #mesma logica, mas com o dinheiro da agencia
 
 #adiciona um dicionario à lista com agencias e a quantidade de clientes vinculados a ela
         resultados.append({"agencia": agencia, 
-                           "quantidadeClientes": contadorAgencia
+                           "quantidadeClientes": contadorAgencia,
+                           "montante": montante      #adiciona o montante também
                            })   
 
 #vê se a lista ta vazia
