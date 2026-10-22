@@ -1,21 +1,5 @@
 {
-    "clientes": [
-        {
-            "nome": "Luan Ferreira Costa",
-            "cpf": "17222904042"
-        }
-    ],
-    "contas": [
-        {
-            "agencia": "0008",
-            "numerodaconta": 1,
-            "senha": "12345678",
-            "saldo": 0,
-            "clientes": [
-                "17222904042"
-            ],
-            "tipo": "corrente",
-            "limite": 500
-        }
-    ]
+"clientes": [],
+"contas": []
+
 }
