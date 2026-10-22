@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoopBank | Dashboard Financeiro</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark"></div><span>Loop<span>Bank</span></span></div>
+    <nav class="nav" aria-label="Menu principal">
+      <a class="active" href="#inicio"><span class="ico">⌂</span>Visão geral</a>
+      <a href="#indicadores"><span class="ico">▣</span>Clientes e contas</a>
+      <a href="#saldos"><span class="ico">↔</span>Saldos</a>
+      <a href="#resumo"><span class="ico">▤</span>Relatórios</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="goal-card"><strong>Finanças em movimento ✦</strong><p>Acompanhe os indicadores das contas cadastradas em um só lugar.</p><a href="#indicadores">Ver indicadores →</a></div>
+      <div class="profile"><div class="avatar">LB</div><div><strong>LoopBank</strong><small>Dashboard financeiro</small></div></div>
+    </div>
+  </aside>
+  <main id="inicio">
+    <header class="topbar"><div><div class="eyebrow">Painel de controle</div><h1>Dashboard financeiro 👋</h1><p class="subtitle">Visão geral dos clientes, contas e saldos do LoopBank.</p></div></header>
+    <section class="welcome"><div><div class="welcome-label">Saldo total em custódia</div><div class="big-number">R$ {{ "{:,.2f}".format(dados.totalSaldo).replace(",", "X").replace(".", ",").replace("X", ".") }}</div><div class="welcome-note">Valor total somado de todas as contas cadastradas.</div></div><div class="welcome-symbol" aria-hidden="true">∞</div></section>
+    <section class="grid" id="indicadores">
+      <article class="metric"><div class="metric-head"><div class="metric-icon">♙</div><span class="tag">Cadastro</span></div><div class="metric-label">Clientes cadastrados</div><div class="metric-value">{{ dados.totalClientes }}</div><div class="metric-foot">Total de clientes registrados</div></article>
+      <article class="metric"><div class="metric-head"><div class="metric-icon blue">▣</div><span class="tag">Contas</span></div><div class="metric-label">Contas ativas</div><div class="metric-value">{{ dados.totalContas }}</div><div class="metric-foot">Total de contas consideradas</div></article>
+      <article class="metric"><div class="metric-head"><div class="metric-icon green">↗</div><span class="tag">Destaque</span></div><div class="metric-label">Maior saldo individual</div><div class="metric-value">R$ {{ "{:,.2f}".format(dados.maiorSaldo).replace(",", "X").replace(".", ",").replace("X", ".") }}</div><div class="metric-foot">Maior saldo entre as contas</div></article>
+      <article class="metric"><div class="metric-head"><div class="metric-icon orange">◉</div><span class="tag">Média</span></div><div class="metric-label">Saldo médio por conta</div><div class="metric-value">R$ {{ "{:,.2f}".format(dados.saldoMedio).replace(",", "X").replace(".", ",").replace("X", ".") }}</div><div class="metric-foot">Saldo total dividido pelas contas</div></article>
+    </section>
+    <section class="content-grid" id="resumo">
+      <article class="panel" id="saldos"><div class="panel-head"><div><h2>Resumo dos saldos</h2><div class="panel-subtitle">Comparativo visual dos indicadores financeiros</div></div><span class="tag">Visão geral</span></div>
+{% set valores = [
+    dados.totalClientes,
+    dados.totalContas,
+    dados.totalSaldo,
+    dados.saldoMedio,
+    dados.maiorSaldo
+] %}
+
+{% set maximo = valores|max %}
+
+<div class="bar-chart" role="img" aria-label="Gráfico dos indicadores">
+
+    {% for rotulo, valor in [
+        ('Clientes', dados.totalClientes),
+        ('Contas', dados.totalContas),
+        ('Saldo total', dados.totalSaldo),
+        ('Saldo médio', dados.saldoMedio),
+        ('Maior saldo', dados.maiorSaldo)
+    ] %}
+
+    <div class="bar-wrap">
+
+        <progress
+            class="bar-progress"
+            value="{{ valor }}"
+            max="{{ maximo if maximo > 0 else 1 }}"
+            aria-label="{{ rotulo }}">
+        </progress>
+
+        <span class="bar-label">{{ rotulo }}</span>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+<div class="chart-legend">
+    <span class="legend-dot"></span>
+    Indicadores reais enviados pelo Flask
+</div>
+
+<div class="note">
+    Os valores deste painel são renderizados pelo Flask usando Jinja2.
+    Não é necessário JavaScript.
+</div>
+      </article>
+      <article class="panel"><div class="panel-head"><div><h2>Resumo financeiro</h2><div class="panel-subtitle">Principais números da operação</div></div></div>
+        <div class="summary-list">
+          <div class="summary-row"><div class="summary-left"><div class="metric-icon">♙</div><div><div class="summary-name">Base de clientes</div><div class="summary-desc">Clientes cadastrados</div></div></div><div class="summary-value">{{ dados.totalClientes }}</div></div>
+          <div class="summary-row"><div class="summary-left"><div class="metric-icon blue">▣</div><div><div class="summary-name">Contas registradas</div><div class="summary-desc">Contas no sistema</div></div></div><div class="summary-value">{{ dados.totalContas }}</div></div>
+          <div class="summary-row"><div class="summary-left"><div class="metric-icon green">R$</div><div><div class="summary-name">Saldo em custódia</div><div class="summary-desc">Soma dos saldos</div></div></div><div class="summary-value">R$ {{ "{:,.2f}".format(dados.totalSaldo).replace(",", "X").replace(".", ",").replace("X", ".") }}</div></div>
+          <div class="summary-row"><div class="summary-left"><div class="metric-icon orange">↗</div><div><div class="summary-name">Maior saldo</div><div class="summary-desc">Conta com maior valor</div></div></div><div class="summary-value">R$ {{ "{:,.2f}".format(dados.maiorSaldo).replace(",", "X").replace(".", ",").replace("X", ".") }}</div></div>
+        </div>
+      </article>
+    </section>
+    <footer class="footer">LoopBank · Tecnologia + Simplicidade + Você</footer>
+  </main>
+</div>
+</body>
+</html>

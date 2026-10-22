@@ -1,5 +1,5 @@
 from conta import listarContas
-from footools import reduce
+from functools import reduce
 
 
 def montanteBanco(contas):

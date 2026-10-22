@@ -5,9 +5,13 @@ from procurar import procurarCliente, procurarPorCpf
 from conta import autenticar, cadastrarConta, excluirContasSemCliente
 from cliente import cadastrarCliente, validarCpf, excluirCliente, editarCliente
 from agencia import receberAgencia, agencias 
+from relatorio import gerarDashboard
 from conta_corrente import criarContaCorrente
 from conta_poupanca import criarContaPoupanca
 from conta_salario import criarContaSalario
+from functools import reduce
+
+
 
 app = Flask(__name__) #cria a aplicação web
 
@@ -232,8 +236,25 @@ def editarNome():
     ))
 
 
-    
 
+@app.route("/gerente/dashboard")
+def dashboard_gerente():
+    
+    dados_arquivo = carregar_dados()                     #carrega os dados do json
+
+    
+    clientes = dados_arquivo.get("clientes", [])        #pega as listas atuais do sistema
+    contas = dados_arquivo.get("contas", [])
+
+    
+    indicadores = gerarDashboard(clientes, contas)          #faz os calculos
+
+                                                            #envia os resultados do python para o HTML
+    return render_template(
+        "dashboard.html",
+        dados=indicadores
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
+
