@@ -1,65 +1,91 @@
-
-<link rel="stylesheet" href="../static/css/relatorios.css">
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatórios - LoopBank</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/relatorios.css') }}">
+    <title>Relatório - LoopBank</title>
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='css/relatorio.css') }}">
 </head>
 
 <body>
     <main class="container">
-        <h1>Relatórios do LoopBank</h1>
+        <h1>Relatório do LoopBank</h1>
 
         <section class="resumo">
             <h2>Resumo do banco</h2>
 
             <p>
                 Montante total:
-                <strong>R$ {{ "%.2f"|format(montante_banco) }}</strong>
+                <strong>R$ {{ montante_banco | brl }}</strong>
             </p>
 
             <p>
                 Maior saldo:
-                <strong>R$ {{ "%.2f"|format(maior_saldo) }}</strong>
+                <strong>R$ {{ maior_saldo | brl }}</strong>
             </p>
 
             <p>
                 Menor saldo:
-                <strong>R$ {{ "%.2f"|format(menor_saldo) }}</strong>
+                <strong>R$ {{ menor_saldo | brl }}</strong>
             </p>
         </section>
 
         <section class="agencias">
             <h2>Montante por agência</h2>
 
+            {# maior montante entre as agências: serve de base para o tamanho das barras #}
+            {% set maximo = (resultados_agencias | map(attribute="montante") | max) if resultados_agencias else 0 %}
+
             {% for resultado in resultados_agencias %}
-                <article class="agencia">
-                    <p>Agência: {{ resultado["agencia"] }}</p>
-                    <p>
-                        Quantidade de clientes:
-                        {{ resultado["quantidadeClientes"] }}
-                    </p>
+                {% set eh_maior = maximo > 0 and resultado["montante"] == maximo %}
+                {% set largura = ((resultado["montante"] / maximo * 100) | round(1)) if maximo > 0 else 0 %}
+                {% set qtd = resultado["quantidadeClientes"] %}
+
+                <article class="linha {{ 'linha-maior' if eh_maior }}">
+                    <div class="rotulo">
+                        Agência {{ resultado["agencia"] }}
+                        <small>{{ qtd }} {{ "cliente" if qtd == 1 else "clientes" }}</small>
+                    </div>
+
+                    <div class="trilho">
+                        <div class="barra" style="width: {{ largura }}%"></div>
+                    </div>
+
+                    <div class="valor {{ 'valor-zerado' if resultado['montante'] == 0 }}">
+                        R$ {{ resultado["montante"] | brl }}
+                        {% if eh_maior %}<span class="etiqueta">maior</span>{% endif %}
+                    </div>
                 </article>
             {% else %}
-                <p>Nenhuma agência encontrada</p>
+                <p class="vazio">Nenhuma agência encontrada</p>
             {% endfor %}
         </section>
 
         <section class="destaque">
-            <h2>Agência com mais clientes</h2>
+            <div class="icone">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                     stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 10l9-6 9 6"></path>
+                    <path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"></path>
+                    <path d="M3 20h18"></path>
+                </svg>
+            </div>
 
-            {% if agencia_maior %}
-                <p>Agência: {{ agencia_maior["agencia"] }}</p>
-                <p>
-                    Quantidade de clientes:
-                    {{ agencia_maior["quantidadeClientes"] }}
-                </p>
-            {% else %}
-                <p>Não há agências para comparar</p>
-            {% endif %}
+            <div>
+                <h2>Agência com mais clientes</h2>
+
+                {% if agencia_maior %}
+                    {% set qtd_maior = agencia_maior["quantidadeClientes"] %}
+                    <p>
+                        Agência {{ agencia_maior["agencia"] }}
+                        <span>com {{ qtd_maior }} {{ "cliente" if qtd_maior == 1 else "clientes" }}</span>
+                    </p>
+                {% else %}
+                    <p>Não há agências para comparar</p>
+                {% endif %}
+            </div>
         </section>
     </main>
 </body>
