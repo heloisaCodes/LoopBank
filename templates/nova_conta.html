@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Conta | LoopBank</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f5f6fc;
+            color: #24233a;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e9e8f2;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+            color: #6554d9;
+            letter-spacing: -1px;
+        }
+
+        .voltar {
+            text-decoration: none;
+            color: #6554d9;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        main {
+            width: 90%;
+            max-width: 620px;
+            margin: 55px auto;
+        }
+
+        .introducao {
+            margin-bottom: 28px;
+        }
+
+        .introducao .etiqueta {
+            display: inline-block;
+            background: #ece9ff;
+            color: #6554d9;
+            padding: 8px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .introducao p {
+            color: #77768a;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .formulario {
+            background: #ffffff;
+            border: 1px solid #e9e8f2;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(48, 38, 100, 0.05);
+        }
+
+        .informacao {
+            background: #f3f1ff;
+            border-left: 4px solid #7966e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #55516f;
+        }
+
+        .campo {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 9px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #deddea;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #24233a;
+            font-size: 14px;
+            outline: none;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: #7966e8;
+            box-shadow: 0 0 0 3px rgba(121, 102, 232, 0.12);
+        }
+
+        .descricao {
+            display: block;
+            color: #858398;
+            font-size: 12px;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .botoes {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .botao {
+            flex: 1;
+            padding: 14px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .cancelar {
+            background: #ffffff;
+            border: 1px solid #deddea;
+            color: #66647a;
+        }
+
+        .cancelar:hover {
+            background: #f7f6fb;
+        }
+
+        .criar {
+            background: #6554d9;
+            color: #ffffff;
+            border: none;
+        }
+
+        .criar:hover {
+            background: #5140c3;
+        }
+
+        .mensagem {
+            background: #fff0f0;
+            color: #b42318;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            main {
+                margin: 35px auto;
+            }
+
+            .formulario {
+                padding: 22px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .botoes {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">LoopBank.</div>
+        <a href="{{ url_for('areaCliente') }}" class="voltar">
+            ← Voltar
+        </a>
+    </header>
+
+    <main>
+        <section class="introducao">
+            <span class="etiqueta">ÁREA DO CLIENTE</span>
+
+            <h1>Criar nova conta</h1>
+
+            <p>
+                Tenha uma nova conta bancária vinculada ao seu cadastro
+                e gerencie suas contas em um só lugar.
+            </p>
+        </section>
+
+        <section class="formulario">
+
+            <div class="informacao">
+                <strong>Seu cadastro permanece o mesmo.</strong>
+                <br>
+                A nova conta será vinculada ao seu CPF. Você não precisa
+                cadastrar seus dados pessoais novamente.
+            </div>
+
+            {% with mensagens = get_flashed_messages() %}
+                {% if mensagens %}
+                    {% for mensagem in mensagens %}
+                        <div class="mensagem">
+                            {{ mensagem }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            
+            <form action="{{ url_for('criarNovaConta', cpf=cliente.cpf) }}" method="POST">
+
+
+                <div class="campo">
+                    <label for="tipo_conta">Tipo de conta</label>
+
+                    <select id="tipo_conta" name="tipo_conta" required>
+                        <option value="" disabled selected>
+                            Selecione o tipo de conta
+                        </option>
+                        <option value="Corrente">Conta Corrente</option>
+                        <option value="Poupança">Conta Poupança</option>
+                        <option value="Salário">Conta Salário</option>
+                    </select>
+
+                    <span class="descricao">
+                        Escolha o tipo de conta que deseja criar.
+                    </span>
+                </div>
+
+                <div class="campo">
+                    <label for="senha">Senha da nova conta</label>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Crie uma senha para esta conta"
+                        required
+                    >
+
+                    <span class="descricao">
+                        A senha será usada para acessar esta conta.
+                    </span>
+                </div>
+
+                <div class="campo">
+                    <label for="confirmar_senha">Confirmar senha</label>
+
+                    <input
+                        type="password"
+                        id="confirmar_senha"
+                        name="confirmar_senha"
+                        placeholder="Digite a senha novamente"
+                        required
+                    >
+                </div>
+
+                <div class="botoes">
+                    <a href="{{ url_for('areaCliente') }}"
+                       class="botao cancelar">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="botao criar">
+                        Criar conta
+                    </button>
+                </div>
+
+            </form>
+        </section>
+    </main>
+
+</body>
+</html>
+```

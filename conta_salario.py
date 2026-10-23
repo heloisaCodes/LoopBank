@@ -64,15 +64,12 @@ def validarCNPJ(cnpj):  # ver se de fato é um cnpj valido
 
         
  # se for CNPJ, cria a conta 
-def criarContaSalario (clientes, empresa, salario, saldo=0):   
-    conta = {
-        "clientes": [clientes],
-        "tipo": "salario",
-        "empresa": empresa,
-        "salário": salario,
-        "saldo": saldo
-                }
-    return conta
+def criarContaSalario (conta, empresa, salario):   
+   conta["tipo"] = "salario",
+   conta["empresa"] = empresa,
+   conta["salário"] = salario
+
+   return conta
 
     
     # se cliente receber algo, pode pedir portabilidade, que seria a mesma logica do que ja foi feito em conta

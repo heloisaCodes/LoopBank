@@ -1,5 +1,64 @@
 {
-"clientes": [],
-"contas": []
-
+    "clientes": [
+        {
+            "nome": "Luan Ferreira Costa",
+            "cpf": "17222904042"
+        },
+        {
+            "nome": "Heloísa Gravatá",
+            "cpf": "63702133062"
+        },
+        {
+            "nome": "Vitória Aline Rocha",
+            "cpf": "80481398988"
+        }
+    ],
+    "contas": [
+        {
+            "agencia": "0008",
+            "numerodaconta": 1,
+            "senha": "12345678",
+            "saldo": 0,
+            "clientes": [
+                "17222904042"
+            ],
+            "tipo": "corrente",
+            "limite": 500
+        },
+        {
+            "agencia": "0009",
+            "numerodaconta": 2,
+            "senha": "1304",
+            "saldo": 0,
+            "clientes": [
+                "63702133062"
+            ],
+            "tipo": "corrente",
+            "limite": 500
+        },
+        {
+            "agencia": "0009",
+            "numerodaconta": 3,
+            "senha": "1304",
+            "saldo": 0,
+            "clientes": [
+                "63702133062"
+            ],
+            "tipo": "corrente",
+            "limite": 500
+        },
+        {
+            "agencia": "0008",
+            "numerodaconta": 4,
+            "senha": "7894",
+            "saldo": 0,
+            "clientes": [
+                "80481398988"
+            ],
+            "tipo": "poupança",
+            "taxa": 0.005,
+            "dataAbertura": "2026-09-02",
+            "ultimoRendimento": "2026-10-02"
+        }
+    ]
 }

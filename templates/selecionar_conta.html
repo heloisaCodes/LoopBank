@@ -195,19 +195,14 @@
                                name="numeroConta"
                                value="{{ conta.numerodaconta }}">
 
-                        <label for="senha-{{ loop.index }}">
-                            Senha da conta
-                        </label>
-
+                        <label for="senha-{{ loop.index }}">Senha da conta</label>
                         <input type="password"
                                id="senha-{{ loop.index }}"
                                name="senha"
                                placeholder="Digite a senha"
                                required>
 
-                        <button type="submit">
-                            Acessar conta
-                        </button>
+                        <button type="submit">Acessar conta</button>
                     </form>
                 </article>
             {% endfor %}
