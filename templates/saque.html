@@ -1,24 +1,60 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saque | LoopBank</title>
-</head>
-<body>
+{% extends "base_operacao.html" %}
 
-    <h1>Realizar saque</h1>
-    <p>Informe o valor que deseja retirar da sua conta</p>
+{% block titulo_aba %}Sacar{% endblock %}
 
-    <form>
-        <label for="valor">Valor do saque:</label>
-        <input type="number" id="valor" name="valor"
-               min="0.01" step="0.01" required>
+{% block icone_titulo %}
+    <svg class="ic" viewBox="0 0 24 24">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <path d="m17 8-5-5-5 5"/>
+        <path d="M12 3v12"/>
+    </svg>
+{% endblock %}
 
-        <button type="submit">Sacar</button>
+{% block titulo %}Sacar{% endblock %}
+
+{% block subtitulo %}Retire seu dinheiro de forma simples e segura.{% endblock %}
+
+{% block conteudo %}
+    <div class="cartao-cabecalho">
+        <span class="icone-quadrado">
+            <svg class="ic"><use href="#i-dinheiro"></use></svg>
+        </span>
+        <h2>Valor do saque</h2>
+    </div>
+
+    <form action="{{ url_for('sacar') }}" method="POST">
+        {# o formulário leva junto quem é o cliente e qual é a conta #}
+        <input type="hidden" name="cpf" value="{{ cliente.cpf }}">
+        <input type="hidden" name="numerodaconta" value="{{ conta.numerodaconta }}">
+
+        <label class="rotulo-campo" for="valor">Valor</label>
+        <div class="campo-valor">
+            <span class="prefixo">R$</span>
+            <input type="text" id="valor" name="valor"
+                   inputmode="decimal" autocomplete="off" autofocus required
+                   placeholder="Ex.: 100,00"
+                   value="{{ valor_digitado or '' }}">
+        </div>
+
+        <div class="saldo-atual">
+            <svg class="ic"><use href="#i-carteira"></use></svg>
+            <div>
+                <span>Disponível para saque</span>
+                <strong>R$ {{ disponivel | float | brl }}</strong>
+            </div>
+        </div>
+
+        <div class="acoes">
+            <a class="botao botao-contorno"
+               href="{{ url_for('areaCliente', cpf=cliente.cpf, numerodaconta=conta.numerodaconta) }}">
+                <svg class="ic"><use href="#i-voltar"></use></svg>
+                Voltar
+            </a>
+
+            <button class="botao botao-cheio" type="submit">
+                <svg class="ic"><use href="#i-check"></use></svg>
+                Confirmar saque
+            </button>
+        </div>
     </form>
-
-    <a href="javascript:history.back()">Voltar</a>
-
-</body>
-</html>
+{% endblock %}

@@ -1,12 +1,19 @@
 import json
 import os
+import math
 from flask import Flask, render_template, request, redirect, url_for
 from procurar import procurarCliente, procurarPorCpf
 from conta import autenticar, cadastrarConta, excluirContasSemCliente
 from cliente import cadastrarCliente, validarCpf, excluirCliente, editarCliente
 from agencia import receberAgencia, agencias 
 from relatorio import gerarDashboard
-from conta_corrente import criarContaCorrente
+from conta_corrente import (
+    criarContaCorrente,
+    deposito as depositoCorrente,
+    saque as saqueCorrente,
+    transferir as transferirCorrente,
+    limite_disponivel,
+)
 from conta_poupanca import criarContaPoupanca
 from conta_salario import criarContaSalario
 from relatorio import (
@@ -16,7 +23,6 @@ from relatorio import (
     menorSaldo
 )
 from functools import reduce
-
 
 
 
@@ -374,8 +380,6 @@ def dashboard_gerente():
         dados=indicadores
     )
 
-if __name__ == '__main__':
-    app.run(debug=True)
 
 @app.route('/relatorio')   #rota de relatorio
 #carrega os dados salvos e pega a lista de contas
@@ -408,5 +412,293 @@ def pagina_relatorio():
         agencia_maior=agencia_maior
     )
 
+
+
+
+#PARTE DE OPERAÇÕES COM A CONTA CORRENTE
+#DEPOSITO
+DEPOSITO_POR_TIPO = {
+    'corrente': depositoCorrente,
+}
+ 
+ 
+def normalizarTipo(tipo):
+    # deixa o tipo em minusculo e sem acento, tipo 'Salário' vira 'salario'
+    tipo = (tipo or '').lower()
+    return tipo.replace('á', 'a').replace('ç', 'c')
+ 
+ 
+def lerValor(texto):
+    # transforma o que a pessoa digitou em número, tipo '1.250,50' vira 1250.5
+    texto = (texto or '').strip().replace('R$', '').replace(' ', '')
+ 
+    if ',' in texto:                                  # formato brasileiro
+        texto = texto.replace('.', '').replace(',', '.')
+ 
+    try:
+        valor = float(texto)
+    except ValueError:                                # digitou letras, por exemplo
+        return None
+ 
+    if not math.isfinite(valor):                      # bloqueia "nan" e "inf"
+        return None
+ 
+    return round(valor, 2)
+ 
+ 
+def buscarContaDoCliente(cpf, numeroConta):
+    # procura, entre as contas daquele cpf, a que tem o número informado
+    for c in procurarPorCpf(contas, cpf):
+        if str(c['numerodaconta']) == str(numeroConta):
+            return c
+    return None
+ 
+
+
+#ROTA DE DEPOSITO PRA CONTA CORRENTE
+@app.route('/deposito', methods=['GET', 'POST'])
+def depositar():
+    #descobre quem é o cliente e qual é a conta
+    #vem na URL quando abre a pagina e no formulario quando confirma
+    cpf = request.values.get('cpf')
+    numeroConta = request.values.get('numerodaconta')
+ 
+    cliente = procurarCliente(clientes, cpf)
+    conta = buscarContaDoCliente(cpf, numeroConta)
+ 
+    if not cliente or not conta:                      #se tiver dados invalidos, a pessoa volta pro login
+        return redirect(url_for('entrarConta'))
+ 
+    erro = None
+    valorDigitado = ''
+ 
+    #a pessoa clicou em "Confirmar deposito"
+    if request.method == 'POST':
+        valorDigitado = request.form.get('valor', '')
+        valor = lerValor(valorDigitado)
+ 
+        #escolhe a funçao de deposito de acordo com o tipo da conta
+        tipo = normalizarTipo(conta.get('tipo'))
+        funcaoDeposito = DEPOSITO_POR_TIPO.get(tipo)
+ 
+        if valor is None or valor <= 0:
+            erro = 'Informe um valor maior que zero'
+        elif funcaoDeposito is None:
+            erro = 'O depósito para este tipo de conta ainda não está disponível'
+        elif funcaoDeposito(conta, valor):            # aplica as regras da conta
+            salvar_dados({'clientes': clientes, 'contas': contas})
+ 
+            #redireciona pra evitar deposito duplicado se a pagina for atualizada
+            return redirect(url_for(
+                'depositar',
+                cpf=cpf,
+                numerodaconta=numeroConta,
+                sucesso=1
+            ))
+        else:
+            erro = 'Não foi possível realizar o depósito.'
+ 
+    #mostra a pagina (primeira visita, erro ou depósito feito com sucesso)
+    sucesso = 'Depósito realizado com sucesso!' if request.args.get('sucesso') else None
+ 
+    return render_template(
+        'deposito.html',
+        cliente=cliente,
+        conta=conta,
+        erro=erro,
+        sucesso=sucesso,
+        valor_digitado=valorDigitado
+    )
+
+
+#SAQUE E TRANFERENCIA PRA CONTA CORRENTE
+# cada tipo de conta tem a sua função, poupança e salário entram aqui depois
+SAQUE_POR_TIPO = {
+    'corrente': saqueCorrente,
+}
+ 
+TRANSFERENCIA_POR_TIPO = {
+    'corrente': transferirCorrente,
+}
+ 
+# quanto a pessoa pode movimentar em cada tipo de conta
+# na corrente é saldo + limite (ex: saldo 100 + limite 500 = 600)
+DISPONIVEL_POR_TIPO = {
+    'corrente': limite_disponivel,
+}
+ 
+    # descobre quanto a conta pode movimentar, usado na tela de saque
+    # e nas mensagens de "saldo insuficiente"
+def valorDisponivel(conta):
+    tipo = normalizarTipo(conta.get('tipo'))
+    calcular = DISPONIVEL_POR_TIPO.get(tipo)    # procura a regra do tipo da conta
+ 
+    if calcular:
+        return calcular(conta)
+    return conta['saldo']    # se o tipo nao tiver regra propria, o disponível é so o saldo
+ 
+ 
+def apenasDigitos(texto):
+    # tira pontos, traços e espaços do cpf pra comparar só os numeros
+    # ex: '123.456.789-00' vira '12345678900'
+    return ''.join(c for c in str(texto or '') if c.isdigit())
+ 
+ 
+def mesmoNumero(a, b):
+   # compara agencia/numero da conta ignorando zeros à esquerda
+    # ex '0001' e '1' contam como iguais (strip tira espaços, lstrip('0') tira os zeros)
+    return str(a).strip().lstrip('0') == str(b).strip().lstrip('0')
+ 
+ 
+def buscarContaDestino(agencia, numeroDestino, cpfDestino):  # procura a conta que vai RECEBER o dinheiro
+    # a conta de destino só vale se agência, numero e cpf do titular baterem
+    cpfLimpo = apenasDigitos(cpfDestino)
+ 
+    for c in contas:
+        if not mesmoNumero(c['agencia'], agencia):       # agencia diferente, pula
+            continue
+        if not mesmoNumero(c['numerodaconta'], numeroDestino):    # numero diferente, pula
+            continue
+ # a conta pode ter mais de um titular, ent confere a lista inteira
+        titulares = [apenasDigitos(t) for t in c['clientes']]
+        if cpfLimpo and cpfLimpo in titulares:
+            return c
+ 
+    return None    # nenhuma conta bateu com os tres dados
+
+
+
+#ROTA DE SAQUE PRA CONTA CORRENTE
+@app.route('/saque', methods=['GET', 'POST'])
+def sacar():
+    # descobre quem é o cliente e qual é a conta
+    # quem é o cliente e qual é a conta (URL na primeira visita, formulário ao confirmar)
+    cpf = request.values.get('cpf')
+    numeroConta = request.values.get('numerodaconta')
+ 
+    cliente = procurarCliente(clientes, cpf)
+    conta = buscarContaDoCliente(cpf, numeroConta)
+ 
+    if not cliente or not conta:           # dados invalidos, volta pro login
+        return redirect(url_for('entrarConta'))
+ 
+    erro = None
+    valorDigitado = ''    # guarda oque a pessoa digitou, pra reaparecer no campo se der algum erro
+ # POST = a pessoa clicou em "Confirmar saque"
+ # GET = só abriu a pagina, aí pula direto pro render_template lá embaixo
+    if request.method == 'POST':
+        valorDigitado = request.form.get('valor', '')    
+        valor = lerValor(valorDigitado)  # transforma '1.250,50' em 1250.5 (ou None ou invalid)
+
+        # escolhe a funçao de saque de acordo com o tipo da conta
+        tipo = normalizarTipo(conta.get('tipo'))
+        funcaoSaque = SAQUE_POR_TIPO.get(tipo)
+
+ # as verificacoes vão em ordem, ent o primeiro problema encontrado vira a mensagem de erro
+        if valor is None or valor <= 0:
+            erro = 'Informe um valor maior que zero'
+
+        elif funcaoSaque is None:   # tipo de conta que ainda nao tem saque implementado
+            erro = 'O saque para este tipo de conta ainda não está disponível'
+
+        elif funcaoSaque(conta, valor):               # aplica as regras da conta, True = saque feito
+            salvar_dados({'clientes': clientes, 'contas': contas})  # grava o novo saldo no json
+ 
+            # redireciona pra evitar saque duplicado se a psgina for atualizada
+            return redirect(url_for(
+                'sacar',
+                cpf=cpf,
+                numerodaconta=numeroConta,
+                sucesso=1   #avisa que deu certo, pra mostrar a mensagem verde
+            ))
+        else:   # a funçao devolveu False, ou seja, valor acima do disponível
+            erro = f'Saldo insuficiente. Você pode sacar até R$ {brl(valorDisponivel(conta))}'
+ 
+    sucesso = 'Saque realizado com sucesso!' if request.args.get('sucesso') else None
+ 
+    return render_template(
+        'saque.html',
+        cliente=cliente,
+        conta=conta,
+        disponivel=valorDisponivel(conta),  # valor mostrado em "Disponível para saque"
+        erro=erro,
+        sucesso=sucesso,
+        valor_digitado=valorDigitado
+    )
+ 
+
+
+
+ #ROTA DE TRANFERENCIA PRA CONTA CORRENTE
+@app.route('/transferencia', methods=['GET', 'POST'])
+def transferirDinheiro():           # cliente e conta de ORIGEM (quem está transferindo)
+    cpf = request.values.get('cpf')
+    numeroConta = request.values.get('numerodaconta')
+ 
+    cliente = procurarCliente(clientes, cpf)
+    conta = buscarContaDoCliente(cpf, numeroConta)
+ 
+    if not cliente or not conta:        # dados invalidos, volta pro login
+        return redirect(url_for('entrarConta'))
+ 
+    erro = None
+    # o que que a pessoa digitou, pra não perder se der erro
+    campos = {'agencia': '', 'numero_destino': '', 'cpf_destino': '', 'valor': ''}
+    # POST = a pessoa clicou em "Confirmar transferência"
+    if request.method == 'POST':
+        campos = {
+            'agencia': request.form.get('agencia', ''),
+            'numero_destino': request.form.get('numero_destino', ''),
+            'cpf_destino': request.form.get('cpf_destino', ''),
+            'valor': request.form.get('valor', ''),
+        }
+ 
+        valor = lerValor(campos['valor'])       # procura a conta de destino com os dados digitados (None se nao existir)
+        contaDestino = buscarContaDestino(
+            campos['agencia'], campos['numero_destino'], campos['cpf_destino']
+        )
+
+        # escolhe a funçao de transferencia de acordo com o tipo da conta de origem
+        tipo = normalizarTipo(conta.get('tipo'))
+        funcaoTransferir = TRANSFERENCIA_POR_TIPO.get(tipo)
+ 
+        if valor is None or valor <= 0:
+            erro = 'Informe um valor maior que zero'
+        elif funcaoTransferir is None:
+            erro = 'A transferência para este tipo de conta ainda não está disponível'
+        elif contaDestino is None:                     # agencia/numero/cpf nao bateram com nenhuma conta
+            erro = 'Conta de destino não encontrada. Confira agência, número e CPF'
+        elif contaDestino is conta:
+            erro = 'Você não pode transferir para a própria conta'
+        elif funcaoTransferir(conta, contaDestino, valor):   # aplica as regras da conta
+            salvar_dados({'clientes': clientes, 'contas': contas})
+
+
+        # redireciona pra evitar transferencia duplicada se a pagina for atualizada
+            return redirect(url_for(
+                'transferirDinheiro',
+                cpf=cpf,
+                numerodaconta=numeroConta,
+                sucesso=1
+            ))
+        else:
+            erro = f'Saldo insuficiente. Você pode transferir até R$ {brl(valorDisponivel(conta))}'
+ 
+    sucesso = 'Transferência realizada com sucesso!' if request.args.get('sucesso') else None
+ 
+    return render_template(
+        'transferencia.html',
+        cliente=cliente,
+        conta=conta,
+        campos=campos,
+        erro=erro,
+        sucesso=sucesso
+    )
+ 
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 

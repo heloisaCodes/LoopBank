@@ -1,0 +1,90 @@
+{% extends "base_operacao.html" %}
+
+{% block titulo_aba %}Transferir{% endblock %}
+
+{% block icone_titulo %}
+    <svg class="ic" viewBox="0 0 24 24">
+        <path d="M8 3 4 7l4 4"/>
+        <path d="M4 7h16"/>
+        <path d="m16 21 4-4-4-4"/>
+        <path d="M20 17H4"/>
+    </svg>
+{% endblock %}
+
+{% block titulo %}Transferir{% endblock %}
+
+{% block subtitulo %}Envie dinheiro para outra conta do LoopBank.{% endblock %}
+
+{% block conteudo %}
+    <div class="cartao-cabecalho">
+        <span class="icone-quadrado">
+            <svg class="ic" viewBox="0 0 24 24">
+                <path d="M3 22h18"/>
+                <path d="M6 18v-7M10 18v-7M14 18v-7M18 18v-7"/>
+                <path d="M12 2 20 7H4z"/>
+            </svg>
+        </span>
+        <h2>Dados da conta de destino</h2>
+    </div>
+
+    <form action="{{ url_for('transferirDinheiro') }}" method="POST">
+        {# o formulário leva junto quem é o cliente e qual é a conta de origem #}
+        <input type="hidden" name="cpf" value="{{ cliente.cpf }}">
+        <input type="hidden" name="numerodaconta" value="{{ conta.numerodaconta }}">
+
+        <div class="campos-duplos">
+            <div class="grupo">
+                <label class="rotulo-campo" for="agencia">Agência</label>
+                <input class="campo-texto" type="text" id="agencia" name="agencia"
+                       autocomplete="off" autofocus required
+                       placeholder="Ex.: 0001"
+                       value="{{ campos.agencia }}">
+            </div>
+
+            <div class="grupo">
+                <label class="rotulo-campo" for="numero_destino">Número da conta</label>
+                <input class="campo-texto" type="text" id="numero_destino" name="numero_destino"
+                       inputmode="numeric" autocomplete="off" required
+                       placeholder="Ex.: 6"
+                       value="{{ campos.numero_destino }}">
+            </div>
+        </div>
+
+        <div class="grupo">
+            <label class="rotulo-campo" for="cpf_destino">CPF do destinatário</label>
+            <input class="campo-texto" type="text" id="cpf_destino" name="cpf_destino"
+                   inputmode="numeric" autocomplete="off" required
+                   placeholder="Ex.: 123.456.789-00"
+                   value="{{ campos.cpf_destino }}">
+        </div>
+
+        <div class="grupo">
+            <label class="rotulo-campo" for="valor">Valor da transferência</label>
+            <div class="campo-valor">
+                <span class="prefixo">R$</span>
+                <input type="text" id="valor" name="valor"
+                       inputmode="decimal" autocomplete="off" required
+                       placeholder="Ex.: 50,00"
+                       value="{{ campos.valor }}">
+            </div>
+        </div>
+
+        <div class="acoes">
+            <a class="botao botao-contorno"
+               href="{{ url_for('areaCliente', cpf=cliente.cpf, numerodaconta=conta.numerodaconta) }}">
+                <svg class="ic"><use href="#i-voltar"></use></svg>
+                Voltar
+            </a>
+
+            <button class="botao botao-cheio" type="submit">
+                <svg class="ic" viewBox="0 0 24 24">
+                    <path d="M8 3 4 7l4 4"/>
+                    <path d="M4 7h16"/>
+                    <path d="m16 21 4-4-4-4"/>
+                    <path d="M20 17H4"/>
+                </svg>
+                Confirmar transferência
+            </button>
+        </div>
+    </form>
+{% endblock %}

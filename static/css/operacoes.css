@@ -1,0 +1,544 @@
+/* ===== Cores e configurações gerais ===== */
+:root {
+    --roxo: #6338df;
+    --roxo-escuro: #4521ad;
+    --roxo-claro: #eee9ff;
+    --roxo-suave: #f6f3ff;
+    --fundo: #f7f7fc;
+    --texto: #292344;
+    --texto-suave: #817b9e;
+    --borda: #e4def5;
+    --branco: #ffffff;
+    --erro: #b42332;
+    --erro-fundo: #fff0f0;
+    --ok: #1f7a4d;
+    --ok-fundo: #eefaf3;
+}
+ 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+ 
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--fundo);
+    color: var(--texto);
+}
+ 
+/* ===== Ícones ===== */
+.sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+ 
+.ic {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+ 
+/* ===== Cabeçalho ===== */
+.topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 14px 6%;
+    background: var(--branco);
+    border-bottom: 1px solid var(--borda);
+}
+ 
+.logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--roxo-escuro);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-decoration: none;
+}
+ 
+.logo .ic {
+    width: 30px;
+    height: 30px;
+    color: var(--roxo);
+    stroke-width: 2;
+}
+ 
+/* Menu do usuário (abre ao clicar no nome) */
+.usuario {
+    position: relative;
+}
+ 
+.usuario summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 12px;
+    list-style: none;
+    cursor: pointer;
+}
+ 
+.usuario summary::-webkit-details-marker {
+    display: none;
+}
+ 
+.usuario summary:hover {
+    background: var(--roxo-suave);
+}
+ 
+.avatar {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--roxo-claro);
+    color: var(--roxo);
+}
+ 
+.usuario-texto {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+}
+ 
+.usuario-texto strong {
+    font-size: 13px;
+    color: var(--roxo-escuro);
+}
+ 
+.usuario-texto small {
+    font-size: 11.5px;
+    color: var(--texto-suave);
+}
+ 
+.seta {
+    width: 16px;
+    height: 16px;
+    color: var(--texto-suave);
+}
+ 
+.usuario[open] .seta {
+    transform: rotate(180deg);
+}
+ 
+.usuario-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 10;
+    width: 220px;
+    padding: 8px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    box-shadow: 0 12px 35px #30205c1a;
+}
+ 
+.usuario-menu a {
+    display: block;
+    padding: 11px 12px;
+    border-radius: 8px;
+    color: var(--texto);
+    font-size: 14px;
+    text-decoration: none;
+}
+ 
+.usuario-menu a:hover {
+    background: var(--roxo-claro);
+    color: var(--roxo);
+}
+ 
+/* ===== Área central ===== */
+.pagina {
+    flex: 1;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 38px 24px 10px;
+}
+ 
+.titulo-pagina {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 26px;
+}
+ 
+.titulo-icone {
+    color: var(--roxo-escuro);
+}
+ 
+.titulo-icone .ic {
+    width: 40px;
+    height: 40px;
+    stroke-width: 1.6;
+}
+ 
+.titulo-pagina h1 {
+    color: var(--roxo-escuro);
+    font-size: 30px;
+    line-height: 1.15;
+}
+ 
+.titulo-pagina p {
+    margin-top: 4px;
+    color: var(--texto-suave);
+    font-size: 14px;
+}
+ 
+/* Mensagens de erro e de sucesso */
+.alerta {
+    margin-bottom: 20px;
+    padding: 13px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+ 
+.alerta-erro {
+    background: var(--erro-fundo);
+    color: var(--erro);
+}
+ 
+.alerta-ok {
+    background: var(--ok-fundo);
+    color: var(--ok);
+}
+ 
+/* Cartão principal + cartão "Sua conta" lado a lado */
+.grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 22px;
+    align-items: start;
+}
+ 
+.cartao-principal {
+    padding: 26px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px #30205c0a;
+}
+ 
+.cartao-cabecalho {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+ 
+.cartao-cabecalho h2 {
+    color: var(--roxo-escuro);
+    font-size: 16px;
+}
+ 
+.icone-quadrado {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--roxo-claro);
+    color: var(--roxo);
+}
+ 
+/* ===== Campos do formulário ===== */
+.rotulo-campo {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: bold;
+}
+ 
+.campo-valor {
+    display: flex;
+}
+ 
+.prefixo {
+    display: grid;
+    place-items: center;
+    padding: 0 16px;
+    background: var(--roxo-suave);
+    border: 1px solid var(--borda);
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    color: var(--roxo-escuro);
+    font-size: 14px;
+    font-weight: bold;
+}
+ 
+.campo-valor input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    padding: 0 14px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 0 10px 10px 0;
+    color: var(--texto);
+    font-size: 15px;
+    outline: none;
+}
+ 
+.campo-valor:focus-within .prefixo,
+.campo-valor input:focus {
+    border-color: var(--roxo);
+}
+ 
+.campo-valor input:focus {
+    box-shadow: 0 0 0 3px #6338df16;
+}
+ 
+/* Caixa com o saldo atual */
+.saldo-atual {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 18px;
+    padding: 16px 18px;
+    background: var(--roxo-claro);
+    border-radius: 12px;
+}
+ 
+.saldo-atual .ic {
+    width: 26px;
+    height: 26px;
+    color: var(--roxo);
+}
+ 
+.saldo-atual span {
+    display: block;
+    color: var(--texto-suave);
+    font-size: 12.5px;
+}
+ 
+.saldo-atual strong {
+    color: var(--roxo-escuro);
+    font-size: 20px;
+}
+ 
+/* ===== Botões ===== */
+.acoes {
+    display: flex;
+    gap: 16px;
+    margin-top: 26px;
+}
+ 
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 22px;
+    border: 1px solid var(--roxo);
+    border-radius: 10px;
+    font-size: 14.5px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+ 
+.botao .ic {
+    width: 18px;
+    height: 18px;
+}
+ 
+.botao-contorno {
+    background: var(--branco);
+    color: var(--roxo);
+}
+ 
+.botao-contorno:hover {
+    background: var(--roxo-claro);
+}
+ 
+.botao-cheio {
+    flex: 1;
+    background: var(--roxo);
+    color: var(--branco);
+}
+ 
+.botao-cheio:hover {
+    background: var(--roxo-escuro);
+}
+ 
+.botao:focus-visible,
+.usuario summary:focus-visible {
+    outline: 3px solid #c9c1ff;
+    outline-offset: 2px;
+}
+ 
+/* ===== Cartão "Sua conta" ===== */
+.cartao-conta {
+    padding: 22px;
+    background: var(--roxo-claro);
+    border: 1px solid #ddd5fa;
+    border-radius: 16px;
+}
+ 
+.cartao-conta-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    color: var(--roxo-escuro);
+    font-size: 15px;
+    font-weight: bold;
+}
+ 
+.cartao-conta p {
+    color: var(--texto-suave);
+    font-size: 13px;
+    line-height: 1.7;
+}
+ 
+.cartao-conta hr {
+    margin: 16px 0;
+    border: none;
+    border-top: 1px solid #d9d0f7;
+}
+ 
+.cartao-conta .rotulo {
+    color: var(--texto-suave);
+    font-size: 12.5px;
+}
+ 
+.cartao-conta .saldo {
+    display: block;
+    margin-top: 4px;
+    color: var(--roxo-escuro);
+    font-size: 22px;
+}
+ 
+/* ===== Rodapé ===== */
+.rodape {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 40px;
+    padding: 16px 6%;
+    background: var(--roxo-suave);
+    border-top: 1px solid var(--borda);
+    color: var(--texto-suave);
+    font-size: 12px;
+}
+ 
+.rodape .logo {
+    font-size: 16px;
+}
+ 
+.rodape .logo .ic {
+    width: 22px;
+    height: 22px;
+}
+ 
+.rodape .ic-coracao {
+    width: 14px;
+    height: 14px;
+    vertical-align: -2px;
+}
+ 
+
+/* ===== Campos de texto comuns (página de transferência) ===== */
+.grupo {
+    margin-bottom: 18px;
+}
+
+.campos-duplos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.campo-texto {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    color: var(--texto);
+    font-size: 15px;
+    outline: none;
+}
+
+.campo-texto:focus {
+    border-color: var(--roxo);
+    box-shadow: 0 0 0 3px #6338df16;
+}
+
+
+/* ===== Tablets e celulares ===== */
+@media (max-width: 820px) {
+    .grade {
+        grid-template-columns: 1fr;
+    }
+ 
+    .cartao-conta {
+        order: -1;
+    }
+}
+ 
+@media (max-width: 560px) {
+    .topo {
+        padding: 12px 16px;
+    }
+ 
+    .usuario-texto small {
+        display: none;
+    }
+ 
+    .pagina {
+        padding: 26px 16px 10px;
+    }
+ 
+    .titulo-pagina h1 {
+        font-size: 25px;
+    }
+ 
+    .cartao-principal {
+        padding: 20px;
+    }
+ 
+    .acoes {
+        flex-direction: column-reverse;
+    }
+ 
+    .botao {
+        width: 100%;
+    }
+ 
+    .botao-cheio {
+        flex: none;
+    }
+ 
+    .rodape {
+        padding: 14px 16px;
+    }
+
+    .campos-duplos {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+

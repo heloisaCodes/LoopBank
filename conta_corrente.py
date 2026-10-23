@@ -1,4 +1,4 @@
-import conta
+import conta as modulo_conta  # importa o arquivo conta.py com o apelido "modulo_conta", pra nao confundir com a variavel "conta" (o dicionario da conta do cliente)
 
 def criarContaCorrente(conta, limite = 500):  # vai pegar o que ja existe em conta e apenas adicionar mais caracteristica pra ser uma conta corrente
     conta["tipo"] = "corrente"
@@ -29,13 +29,11 @@ def credito(conta, valor):         # pra usar limite
 
 # aqui chama a funcao deposito feito antes em conta, pra nao precisar fzr de novo
 def deposito(conta, valor):
-    novo_saldo = conta.deposito(     
-        conta["saldo"],
-        valor
-    )
-
-    conta["saldo"] = novo_saldo 
+    if valor <= 0:                  # não aceita valor zero ou negativo
+        return False
+    conta["saldo"] = modulo_conta.deposito(conta["saldo"], valor)
     return True
+
 
  # mesma ideia do saque, aqui ver quanto a pessoa tem disponivel levando em consideracao o limite
 def saque(conta, valor):           
@@ -48,14 +46,17 @@ def saque(conta, valor):
     return True
 
 
-def transferir(conta, conta_destino, valor):   # o que ja tem em conta, foi usado a msm logica
-    resultado = conta.transferir(              # chama a funcao transferir que ta em conta
-        conta,
-        conta_destino,
-        valor
-    )
-
-    return resultado
+#a funçao antiga só olhava o saldo e ignorava o limite da conta corrente, essa atual ajusta isso
+def transferir(conta, conta_destino, valor):
+    if valor <= 0:        
+        return False
+ 
+    if valor > limite_disponivel(conta):     # saldo + limite, igual ao saque
+        return False
+ 
+    conta["saldo"] = round(conta["saldo"] - valor, 2)      # o round arredonda pra 2 casas decimais, para nao aparecer um saldo com varias casas decimais
+    conta_destino["saldo"] = round(conta_destino["saldo"] + valor, 2)     # tira o valor do saldo da conta de origem e soma na conta de destino
+    return True
 
 
 # aqui é uma simulacao de outro banco

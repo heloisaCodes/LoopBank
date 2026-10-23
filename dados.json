@@ -11,6 +11,14 @@
         {
             "nome": "Vitória Aline Rocha",
             "cpf": "80481398988"
+        },
+        {
+            "nome": "Eduarda dos Santos",
+            "cpf": "47310396146"
+        },
+        {
+            "nome": "Luiza Santos",
+            "cpf": "06726570902"
         }
     ],
     "contas": [
@@ -59,6 +67,28 @@
             "taxa": 0.005,
             "dataAbertura": "2026-09-02",
             "ultimoRendimento": "2026-10-02"
+        },
+        {
+            "agencia": "0011",
+            "numerodaconta": 5,
+            "senha": "eunaosei",
+            "saldo": 0,
+            "clientes": [
+                "47310396146"
+            ],
+            "tipo": "corrente",
+            "limite": 500
+        },
+        {
+            "agencia": "0006",
+            "numerodaconta": 6,
+            "senha": "eunaosei",
+            "saldo": 100.0,
+            "clientes": [
+                "06726570902"
+            ],
+            "tipo": "corrente",
+            "limite": 500
         }
     ]
 }

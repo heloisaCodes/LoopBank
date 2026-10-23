@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo_aba %}Operação{% endblock %} | LoopBank</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/operacoes.css') }}">
+</head>
+
+<body>
+    {# Ícones usados em todas as páginas de operação (desenhados uma vez só) #}
+    <svg class="sprite" aria-hidden="true" focusable="false">
+        <symbol id="i-infinito" viewBox="0 0 24 24">
+            <path d="M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8"/>
+        </symbol>
+        <symbol id="i-usuario" viewBox="0 0 24 24">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+        </symbol>
+        <symbol id="i-seta" viewBox="0 0 24 24">
+            <path d="m6 9 6 6 6-6"/>
+        </symbol>
+        <symbol id="i-deposito" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="m7 10 5 5 5-5"/>
+            <path d="M12 15V3"/>
+        </symbol>
+        <symbol id="i-dinheiro" viewBox="0 0 24 24">
+            <rect width="20" height="12" x="2" y="6" rx="2"/>
+            <circle cx="12" cy="12" r="2"/>
+            <path d="M6 12h.01M18 12h.01"/>
+        </symbol>
+        <symbol id="i-carteira" viewBox="0 0 24 24">
+            <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+            <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+        </symbol>
+        <symbol id="i-escudo" viewBox="0 0 24 24">
+            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+            <path d="m9 12 2 2 4-4"/>
+        </symbol>
+        <symbol id="i-voltar" viewBox="0 0 24 24">
+            <path d="m12 19-7-7 7-7"/>
+            <path d="M19 12H5"/>
+        </symbol>
+        <symbol id="i-check" viewBox="0 0 24 24">
+            <path d="M20 6 9 17l-5-5"/>
+        </symbol>
+        <symbol id="i-coracao" viewBox="0 0 24 24">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+        </symbol>
+    </svg>
+
+    {# Parâmetros que identificam cliente e conta nos links do menu #}
+    {% set q = 'cpf=' ~ (cliente.cpf | urlencode) ~ '&numerodaconta=' ~ (conta.numerodaconta | urlencode) %}
+
+    <header class="topo">
+        <a class="logo"
+           href="{{ url_for('areaCliente', cpf=cliente.cpf, numerodaconta=conta.numerodaconta) }}">
+            <svg class="ic"><use href="#i-infinito"></use></svg>
+            <span>LoopBank</span>
+        </a>
+
+        <details class="usuario">
+            <summary>
+                <span class="avatar">
+                    <svg class="ic"><use href="#i-usuario"></use></svg>
+                </span>
+
+                <span class="usuario-texto">
+                    <strong>Olá, {{ cliente.nome.split()[0] if cliente.nome else 'cliente' }}</strong>
+                    <small>Agência {{ conta.agencia }} &nbsp;|&nbsp; Conta {{ conta.numerodaconta }}</small>
+                </span>
+
+                <svg class="ic seta"><use href="#i-seta"></use></svg>
+            </summary>
+
+            <nav class="usuario-menu">
+                <a href="{{ url_for('areaCliente', cpf=cliente.cpf, numerodaconta=conta.numerodaconta) }}">Início</a>
+                <a href="/deposito?{{ q }}">Depositar</a>
+                <a href="/saque?{{ q }}">Sacar</a>
+                <a href="/transferencia?{{ q }}">Transferir</a>
+                <a href="{{ url_for('entrarConta') }}">Trocar de conta</a>
+                <a href="{{ url_for('inicio') }}">Sair da conta</a>
+            </nav>
+        </details>
+    </header>
+
+    <main class="pagina">
+        <div class="titulo-pagina">
+            <span class="titulo-icone">{% block icone_titulo %}{% endblock %}</span>
+            <div>
+                <h1>{% block titulo %}{% endblock %}</h1>
+                <p>{% block subtitulo %}{% endblock %}</p>
+            </div>
+        </div>
+
+        {% if erro %}
+            <div class="alerta alerta-erro" role="alert">{{ erro }}</div>
+        {% endif %}
+
+        {% if sucesso %}
+            <div class="alerta alerta-ok" role="status">{{ sucesso }}</div>
+        {% endif %}
+
+        <div class="grade">
+            <section class="cartao-principal">
+                {% block conteudo %}{% endblock %}
+            </section>
+
+            <aside class="cartao-conta">
+                <div class="cartao-conta-titulo">
+                    <svg class="ic"><use href="#i-escudo"></use></svg>
+                    <span>Sua conta</span>
+                </div>
+
+                <p>Agência {{ conta.agencia }}</p>
+                <p>Conta {{ conta.numerodaconta }}</p>
+
+                <hr>
+
+                <span class="rotulo">Saldo disponível</span>
+                <strong class="saldo">R$ {{ conta.saldo | float | brl }}</strong>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="rodape">
+        <span class="logo">
+            <svg class="ic"><use href="#i-infinito"></use></svg>
+            <span>LoopBank</span>
+        </span>
+
+        <span>
+            Mais que um banco, um ciclo com você
+            <svg class="ic ic-coracao"><use href="#i-coracao"></use></svg>
+        </span>
+    </footer>
+</body>
+</html>
