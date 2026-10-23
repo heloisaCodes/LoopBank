@@ -19,6 +19,10 @@
         {
             "nome": "Luiza Santos",
             "cpf": "06726570902"
+        },
+        {
+            "nome": "Liz Macedo",
+            "cpf": "68115809330"
         }
     ],
     "contas": [
@@ -89,6 +93,19 @@
             ],
             "tipo": "corrente",
             "limite": 500
+        },
+        {
+            "agencia": "0014",
+            "numerodaconta": 7,
+            "senha": "eunaosei",
+            "saldo": 0,
+            "clientes": [
+                "68115809330"
+            ],
+            "tipo": "poupança",
+            "taxa": 0.005,
+            "dataAbertura": "2026-09-02",
+            "ultimoRendimento": "2026-10-02"
         }
     ]
 }

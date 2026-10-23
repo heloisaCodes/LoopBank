@@ -14,7 +14,13 @@ from conta_corrente import (
     transferir as transferirCorrente,
     limite_disponivel,
 )
-from conta_poupanca import criarContaPoupanca
+from conta_poupanca import (
+    criarContaPoupanca,
+    deposito as depositoPoupanca,
+    saque as saquePoupanca,
+    transferir as transferirPoupanca,
+    verificarRendimento,
+)
 from conta_salario import criarContaSalario
 from relatorio import (
     montanteBanco,
@@ -414,11 +420,25 @@ def pagina_relatorio():
 
 
 
-
-#PARTE DE OPERAÇÕES COM A CONTA CORRENTE
-#DEPOSITO
 DEPOSITO_POR_TIPO = {
     'corrente': depositoCorrente,
+    'poupanca': depositoPoupanca
+}
+
+SAQUE_POR_TIPO = {
+    'corrente': saqueCorrente,
+    'poupanca': saquePoupanca,
+}
+ 
+TRANSFERENCIA_POR_TIPO = {
+    'corrente': transferirCorrente,
+    'poupanca': transferirPoupanca,
+}
+ 
+# quanto a pessoa pode movimentar em cada tipo de conta
+# na corrente é saldo + limite (ex: saldo 100 + limite 500 = 600)
+DISPONIVEL_POR_TIPO = {
+    'corrente': limite_disponivel,
 }
  
  
@@ -452,10 +472,28 @@ def buscarContaDoCliente(cpf, numeroConta):
         if str(c['numerodaconta']) == str(numeroConta):
             return c
     return None
- 
 
 
-#ROTA DE DEPOSITO PRA CONTA CORRENTE
+#FUNÇÕES PARA A CONTA POUPANÇA
+def aplicarRendimento(conta):
+    # na poupança, aplica o rendimento se já passou 30 dias e salva só se algo mudou
+    if normalizarTipo(conta.get('tipo')) != 'poupanca':
+        return
+
+    antes = conta['ultimoRendimento']   #guarda a data do último rendimento ANTES de verificar,
+                                        # pra depois saber se o rendimento foi aplicado ou não
+    verificarRendimento(conta)  
+    #se ja passou 30 dias, essa funçao soma o rendimento ao saldo
+    # e atualiza a data do ultimo rendimento pra hoje
+
+
+    if conta['ultimoRendimento'] != antes:  
+        salvar_dados({'clientes': clientes, 'contas': contas})
+#se a data mudou, o rendimento foi aplicado, ent precisa gravar no json
+#se nao mudou, naao grava nada, pra evitar salvar o arquivo à toa a cada clique
+
+
+#ROTA DE DEPOSITO PRA CONTA CORRENTE E POUPANÇA
 @app.route('/deposito', methods=['GET', 'POST'])
 def depositar():
     #descobre quem é o cliente e qual é a conta
@@ -468,6 +506,8 @@ def depositar():
  
     if not cliente or not conta:                      #se tiver dados invalidos, a pessoa volta pro login
         return redirect(url_for('entrarConta'))
+    
+    aplicarRendimento(conta) #pra que o rendimento da conta poupança seja aplicado em deposito
  
     erro = None
     valorDigitado = ''
@@ -511,22 +551,7 @@ def depositar():
     )
 
 
-#SAQUE E TRANFERENCIA PRA CONTA CORRENTE
-# cada tipo de conta tem a sua função, poupança e salário entram aqui depois
-SAQUE_POR_TIPO = {
-    'corrente': saqueCorrente,
-}
- 
-TRANSFERENCIA_POR_TIPO = {
-    'corrente': transferirCorrente,
-}
- 
-# quanto a pessoa pode movimentar em cada tipo de conta
-# na corrente é saldo + limite (ex: saldo 100 + limite 500 = 600)
-DISPONIVEL_POR_TIPO = {
-    'corrente': limite_disponivel,
-}
- 
+#FUNÇÕES PRA CONTA 
     # descobre quanto a conta pode movimentar, usado na tela de saque
     # e nas mensagens de "saldo insuficiente"
 def valorDisponivel(conta):
@@ -568,7 +593,7 @@ def buscarContaDestino(agencia, numeroDestino, cpfDestino):  # procura a conta q
 
 
 
-#ROTA DE SAQUE PRA CONTA CORRENTE
+#ROTA DE SAQUE (CONTA CORRENTE E POUPANÇA)
 @app.route('/saque', methods=['GET', 'POST'])
 def sacar():
     # descobre quem é o cliente e qual é a conta
@@ -581,6 +606,7 @@ def sacar():
  
     if not cliente or not conta:           # dados invalidos, volta pro login
         return redirect(url_for('entrarConta'))
+    aplicarRendimento(conta)  #pra que o rendimento da conta poupança tbm seja aplicado em saque
  
     erro = None
     valorDigitado = ''    # guarda oque a pessoa digitou, pra reaparecer no campo se der algum erro
@@ -629,7 +655,7 @@ def sacar():
 
 
 
- #ROTA DE TRANFERENCIA PRA CONTA CORRENTE
+ #ROTA DE TRANFERENCIA (CONTA CORRENTE E POUPANÇA)
 @app.route('/transferencia', methods=['GET', 'POST'])
 def transferirDinheiro():           # cliente e conta de ORIGEM (quem está transferindo)
     cpf = request.values.get('cpf')
@@ -640,6 +666,7 @@ def transferirDinheiro():           # cliente e conta de ORIGEM (quem está tran
  
     if not cliente or not conta:        # dados invalidos, volta pro login
         return redirect(url_for('entrarConta'))
+    aplicarRendimento(conta)  #pra que o rendimento da conta poupança tbm seja aplicado em tranferencia
  
     erro = None
     # o que que a pessoa digitou, pra não perder se der erro
@@ -694,8 +721,6 @@ def transferirDinheiro():           # cliente e conta de ORIGEM (quem está tran
         erro=erro,
         sucesso=sucesso
     )
- 
-
 
 
 if __name__ == '__main__':
