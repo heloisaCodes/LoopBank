@@ -21,14 +21,13 @@ from conta_poupanca import (
     transferir as transferirPoupanca,
     verificarRendimento,
 )
-from conta_salario import criarContaSalario
+from conta_salario import criarContaSalario, validarCNPJ
 from relatorio import (
     montanteBanco,
     montanteAgencia,
     maiorSaldo,
     menorSaldo
 )
-from functools import reduce
 
 
 
@@ -86,6 +85,18 @@ def cadastroCliente():
     senha = request.form.get('senha')
     tipo = request.form.get('tipo')
 
+    #dados da conta salário
+    empresa = request.form.get('empresa')
+    cnpj = request.form.get('cnpj')
+    salario = request.form.get('salario')
+
+    if tipo == 'Salário': # valida o cnpj, caso não, retorna a pagina de cadastro com a mensagem de erro
+        if not validarCNPJ(cnpj):
+            return render_template(
+                'cadastro.html',
+                erro='CNPJ inválido.'
+            ) 
+
 
     if not validarCpf(cpf): #vẽ se o cpf segue o padrão certo, caso não, retorna a pagina de cadastro com a mensagem de erro
         return render_template(
@@ -111,12 +122,12 @@ def cadastroCliente():
     if contaCliente:  #cadastro bem sucedido
         novaConta = contas[-1]  #pega a ultima conta cadastrada, que é a nova conta
 
-        if tipo == 'Corrente':
+        if tipo == 'corrente':
             criarContaCorrente(novaConta)  #cria a conta corrente
-        elif tipo == 'Poupança':
+        elif tipo == 'poupança':
             criarContaPoupanca(novaConta)  #cria a conta poupança
-        elif tipo == 'Salário':
-            criarContaSalario(novaConta)  #cria a conta salário
+        elif tipo == 'salario':
+            criarContaSalario(novaConta, empresa, salario, cnpj)  #cria a conta salário
 
         
         salvar_dados({
@@ -127,71 +138,73 @@ def cadastroCliente():
         return redirect(url_for('areaCliente'))  #vai para a area do cliente, entra no banco
 
 
-
-@app.route('/login', methods=['GET', 'POST']) #ou faz o login
+@app.route('/login', methods=['GET', 'POST'])
 def entrarConta():
-    if request.method == 'GET':  #mostra a pagina
+    if request.method == 'GET':  # Mostra a página de login
         return render_template('login.html')
 
-    cpf = request.form.get('cpf')                  #pega os dados dos clientes
+    cpf = request.form.get('cpf')                  
     senhadigitada = request.form.get('senha')
 
-    if not validarCpf(cpf): #vẽ se o cpf segue o padrão certo, caso não, retorna a pagina de cadastro com a mensagem de erro
+    if not validarCpf(cpf):  #Vê se o CPF segue o padrão certo
         return render_template(
-        'login.html',
-        erro='CPF inválido.'
-    )
+            'login.html',
+            erro='CPF inválido.'
+        )
 
-    cliente = procurarCliente(clientes, cpf)  #cliente com respectivo cpf
-    contasCliente = procurarPorCpf(contas, cpf) #procura as contas do cliente pelo cpf
+    cliente = procurarCliente(clientes, cpf)  
+    contasCliente = procurarPorCpf(contas, cpf) 
 
-    if cliente:            #cliente já está cadastrado
+    if cliente:  #Cliente já está cadastrado
         contasCorrespondentes = []
 
-        for conta in contasCliente:  #verifica todas as contas do cliente
-            verificasenha = autenticar(conta, senhadigitada) #autenticar está fazendo a comparação
+        
+        for conta in contasCliente:  
+            verificasenha = autenticar(conta, senhadigitada) #verifica a senha
 
-            if verificasenha: #se a senha digitada for igual a senha da conta
-                contasCorrespondentes.append(conta) #então adiciona a conta na lista de contas correspondentes
+            if verificasenha:  #Se a senha digitada for igual à senha da conta
+                contasCorrespondentes.append(conta) #adiciona a correspondentes
 
-        if len(contasCorrespondentes) == 1:  #a senha pertence a apenas 1 conta
-           if conta['tipo'] == 'corrente':
-               return render_template(
-                'area_corrente.html',
-                cliente=cliente,
-                conta=conta
-            )
+        if len(contasCorrespondentes) == 1:  #A senha pertence a apenas 1 conta
+            contaUnica = contasCorrespondentes[0]
+            
+            if contaUnica['tipo'] == 'corrente': #entra na conta correspondente
+                return render_template(
+                    'area_corrente.html',
+                    cliente=cliente,
+                    conta=contaUnica
+                )
 
-           elif conta['tipo'] == 'poupança':
-               return render_template(
-                'area_poupanca.html',
-                cliente=cliente,
-                conta=conta
-            )
+            elif contaUnica['tipo'] == 'poupança':
+                return render_template(
+                    'area_poupanca.html',
+                    cliente=cliente,
+                    conta=contaUnica
+                )
 
-           elif conta['tipo'] == 'salario':
-               return render_template(
-                'area_salario.html',
-                cliente=cliente,
-                conta=conta
-            )
+            elif contaUnica['tipo'] == 'salario':
+                return render_template(
+                    'area_salario.html',
+                    cliente=cliente,
+                    conta=contaUnica
+                )
 
-        elif len(contasCorrespondentes) > 1: #mais de 1 conta possui a mesma senha ps: em conta.py nas funções referentes não tem nenhuma restrição de senha
+        elif len(contasCorrespondentes) > 1:  #Mais de 1 conta possui a mesma senha
             return render_template(
-                'selecionar_conta.html',      #mostra a lista de contas do cliente (com a mesma senha)
+                'selecionar_conta.html',      
                 contas=contasCorrespondentes,
                 cpf=cpf,
                 cliente=cliente
             )
 
-        else:  #senha errada, tenta dnv
+        else:  #Senha errada
             return render_template(
                 'login.html',
                 mensagem='Senha incorreta.'
             )
 
-    else:  #cliente não está cadastrado
-        return redirect(url_for('cadastroCliente')) #vai para cadastro
+    else:  #Cliente não está cadastrado
+        return redirect(url_for('cadastroCliente'))
     
 
 @app.route('/area_cliente') #pagina do cliente
@@ -209,12 +222,12 @@ def areaCliente():
             conta = c
 
     if cliente and conta: #encontrou o cliente e a conta?
-        if conta['tipo'] == 'corrente':
+        if conta['tipo'] == 'corrente': #entra na área da conta correspondente
            return render_template(
                'area_corrente.html',
                 cliente=cliente,
                 conta=conta
-                ) #entra na área da conta corrente
+                ) 
         elif conta['tipo'] == 'poupança':
             return render_template(
                 'area_poupanca.html',
@@ -234,48 +247,52 @@ def areaCliente():
 def selecionarConta():
     cpf = request.form.get('cpf')
     numeroConta = request.form.get('numeroConta')
-    senhaDigitada = request.form.get('senha')
 
-    contasCliente = procurarPorCpf(contas, cpf)
+    
+    contasCliente = procurarPorCpf(contas, cpf) 
     cliente = procurarCliente(clientes, cpf)
-    contaEscolhida = None #ainda nao escolheu nenhuma conta
+    
+    contaEscolhida = None
 
-    for conta in contasCliente: #para cada conta do cliente
-        if str(conta['numerodaconta']) == str(numeroConta): #selecionar a conta correta
-            if autenticar(conta, senhaDigitada): #a senha é a mesma
-                contaEscolhida = conta   #ent ele escolheu determinada conta
+    #aqui verifica qual conta ele escolheu ao clicar no botao
+    for conta in contasCliente:
+        if str(conta['numerodaconta']) == str(numeroConta):
+            contaEscolhida = conta #pega a conta especifica
 
-    if cliente and contaEscolhida: #tem o cliente e a conta escolhida?
-        if conta['tipo'] == 'corrente':
+    
+    if cliente and contaEscolhida:  #se encontrou o cliente e a conta correspondente
+        tipo_conta = contaEscolhida.get('tipo')
+        
+        if tipo_conta == 'corrente': #redireciona para a respetiva área
             return render_template(
                 'area_corrente.html',
                 cliente=cliente,
-                conta=conta
+                conta=contaEscolhida
             )
 
-        elif conta['tipo'] == 'poupança':
+        elif tipo_conta == 'poupança':
             return render_template(
                 'area_poupanca.html',
                 cliente=cliente,
-                conta=conta
+                conta=contaEscolhida
             )
 
-        elif conta['tipo'] == 'salario':
+        elif tipo_conta == 'salario':
             return render_template(
                 'area_salario.html',
                 cliente=cliente,
-                conta=conta
+                conta=contaEscolhida
             )
 
-    return render_template( #deu algum erro, volta para fazer dnv
+    # Se por algum motivo a conta não for encontrada, recarrega a página mostrando as contas
+    return render_template(
         'selecionar_conta.html',
         contas=contasCliente,
         cpf=cpf,
         cliente=cliente,
-        erro='Senha incorreta ou conta inválida.'
+        erro='Conta inválida ou erro ao selecionar.'
     )
-
-
+    
 @app.route('/excluir_cliente', methods=['POST']) #exclui o cliente
 def excluirCadastro():
     cpf = request.form.get('cpf') #pega o cpf do cliente a ser excluido
@@ -343,12 +360,12 @@ def criarNovaConta():
     if contaCriada: #cria a conta do tipo
         novaConta = contas[-1]
 
-        if tipo == 'Corrente':
+        if tipo == 'corrente':
             criarContaCorrente(novaConta)
-        elif tipo == 'Poupança':
+        elif tipo == 'poupança':
             criarContaPoupanca(novaConta)
-        elif tipo == 'Salário':
-            criarContaSalario(novaConta)
+        elif tipo == 'salario':
+            criarContaSalario(novaConta, empresa="", salario=0.0, cnpj="" )
 
         salvar_dados({
             'clientes': clientes, #salva os dados

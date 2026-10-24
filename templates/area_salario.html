@@ -615,26 +615,37 @@
 
             <div class="informacoes">
                 <article class="info-card">
-                    <div class="info-cabecalho">
-                        <div class="info-icone">▣</div>
-                        <h3>Dados salariais</h3>
-                    </div>
+                    
+<article class="info-card">
+    <div class="info-cabecalho">
+        <div class="info-icone">▣</div>
+        <h3>Dados salariais</h3>
+    </div>
 
-                    <p class="rotulo">Empresa vinculada</p>
-                    <p class="valor">
-                        {{ conta.empresa if conta.empresa is defined else 'Não informada' }}
-                    </p>
+    <p class="rotulo">Empresa vinculada</p>
+    <p class="valor">
+        {{ conta.empresa if conta.empresa is defined else 'Não informada' }}
+    </p>
 
-                    <div class="detalhe">
-                        <p class="rotulo">Salário cadastrado</p>
-                        <p class="valor">
-                            {% if conta['salário'] is defined %}
-                                R$ {{ "%.2f"|format(conta['salário']|float)|replace(".", ",") }}
-                            {% else %}
-                                Não informado
-                            {% endif %}
-                        </p>
-                    </div>
+    <div class="detalhe">
+        <p class="rotulo">CNPJ</p>
+        <p class="valor">
+            {{ conta.cnpj if conta.cnpj is defined else 'Não informado' }}
+        </p>
+    </div>
+
+    <div class="detalhe">
+        <p class="rotulo">Salário cadastrado</p>
+        <p class="valor">
+            {% if conta.salario is defined %}
+                R$ {{ "%.2f"|format(conta.salario|float)|replace(".", ",") }}
+            {% else %}
+                Não informado
+            {% endif %}
+        </p>
+    </div>
+</article>
+
                 </article>
 
                 <article class="info-card">

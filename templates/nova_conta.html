@@ -203,6 +203,23 @@
     </style>
 </head>
 
+<script>
+    var tipo = document.getElementById('tipo_conta');
+    var blocoSalario = document.getElementById('dados-salario');
+    var camposSalario = blocoSalario.querySelectorAll('input');
+
+    function atualizarCampos() {
+        var ehSalario = tipo.value === 'salario';
+        blocoSalario.hidden = !ehSalario;
+        camposSalario.forEach(function (campo) {
+            campo.required = ehSalario;
+        });
+    }
+
+    tipo.addEventListener('change', atualizarCampos);
+    atualizarCampos();
+</script>
+
 <body>
 
     <header>
@@ -242,6 +259,9 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
+            {% if erro %}
+                <div class="mensagem">{{ erro }}</div>
+            {% endif %}
 
             
             <form action="{{ url_for('criarNovaConta', cpf=cliente.cpf) }}" method="POST">
@@ -254,15 +274,39 @@
                         <option value="" disabled selected>
                             Selecione o tipo de conta
                         </option>
-                        <option value="Corrente">Conta Corrente</option>
-                        <option value="Poupança">Conta Poupança</option>
-                        <option value="Salário">Conta Salário</option>
-                    </select>
+                        <option value="corrente" {% if request.form.get('tipo_conta') == 'corrente' %}selected{% endif %}>Conta Corrente</option>
+                        <option value="poupança" {% if request.form.get('tipo_conta') == 'poupança' %}selected{% endif %}>Conta Poupança</option>
+                        <option value="salario" {% if request.form.get('tipo_conta') == 'salario' %}selected{% endif %}>Conta Salário</option>
 
                     <span class="descricao">
                         Escolha o tipo de conta que deseja criar.
                     </span>
                 </div>
+
+                <div id="dados-salario" hidden>
+                    <div class="campo">
+                        <label for="empresa">Empresa</label>
+                        <input type="text" id="empresa" name="empresa"
+                               placeholder="Nome da empresa"
+                               value="{{ request.form.get('empresa') or '' }}">
+                </div>
+
+                <div class="campo">
+                    <label for="cnpj">CNPJ da empresa</label>
+                    <input type="text" id="cnpj" name="cnpj"
+                           inputmode="numeric" maxlength="14"
+                           placeholder="Digite os 14 números do CNPJ"
+                           value="{{ request.form.get('cnpj') or '' }}">
+                </div>
+
+                <div class="campo">
+                    <label for="salario">Salário</label>
+                    <input type="number" id="salario" name="salario"
+                           min="0.01" step="0.01"
+                           placeholder="Valor do salário"
+                           value="{{ request.form.get('salario') or '' }}">
+                </div>
+           </div>
 
                 <div class="campo">
                     <label for="senha">Senha da nova conta</label>
@@ -309,4 +353,3 @@
 
 </body>
 </html>
-```

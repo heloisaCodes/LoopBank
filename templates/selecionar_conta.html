@@ -92,25 +92,6 @@
             margin-top: 6px;
         }
 
-        label {
-            display: block;
-            font-size: 14px;
-            margin: 20px 0 8px;
-        }
-
-        input {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #dcdcea;
-            border-radius: 9px;
-            font-size: 15px;
-        }
-
-        input:focus {
-            outline: 2px solid #c9c1ff;
-            border-color: #6957d9;
-        }
-
         button {
             width: 100%;
             margin-top: 14px;
@@ -194,13 +175,6 @@
                         <input type="hidden"
                                name="numeroConta"
                                value="{{ conta.numerodaconta }}">
-
-                        <label for="senha-{{ loop.index }}">Senha da conta</label>
-                        <input type="password"
-                               id="senha-{{ loop.index }}"
-                               name="senha"
-                               placeholder="Digite a senha"
-                               required>
 
                         <button type="submit">Acessar conta</button>
                     </form>

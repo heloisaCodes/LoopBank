@@ -5,7 +5,23 @@
             "cpf": "17222904042"
         },
         {
-            "nome": "Heloísa Gravatá",
+            "nome": "Vitória Aline Rocha",
+            "cpf": "80481398988"
+        },
+        {
+            "nome": "Sara Rosângela Rafaela Rodrigues",
+            "cpf": "38615411492"
+        },
+        {
+            "nome": "Giovana Betina Fernandes",
+            "cpf": "38079944083"
+        },
+        {
+            "nome": "Josefa Luna Lara Ramos",
+            "cpf": "79963874789"
+        },
+        {
+            "nome": "Laís Sara Bárbara Vieira",
             "cpf": "63702133062"
         },
         {
@@ -38,30 +54,8 @@
             "limite": 500
         },
         {
-            "agencia": "0009",
-            "numerodaconta": 2,
-            "senha": "1304",
-            "saldo": 0,
-            "clientes": [
-                "63702133062"
-            ],
-            "tipo": "corrente",
-            "limite": 500
-        },
-        {
-            "agencia": "0009",
-            "numerodaconta": 3,
-            "senha": "1304",
-            "saldo": 0,
-            "clientes": [
-                "63702133062"
-            ],
-            "tipo": "corrente",
-            "limite": 500
-        },
-        {
             "agencia": "0008",
-            "numerodaconta": 4,
+            "numerodaconta": 2,
             "senha": "7894",
             "saldo": 0,
             "clientes": [
@@ -74,7 +68,127 @@
         },
         {
             "agencia": "0011",
+            "numerodaconta": 3,
+            "senha": "123456",
+            "saldo": 1500.0,
+            "clientes": [
+                "38615411492"
+            ],
+            "tipo": "salario",
+            "empresa": "Itáu",
+            "salario": 1500.0,
+            "cnpj": "85433977000155",
+            "ultimoRecebimento": "2026-10"
+        },
+        {
+            "agencia": "0011",
+            "numerodaconta": 4,
+            "senha": "1478",
+            "saldo": 0,
+            "clientes": [
+                "38079944083"
+            ],
+            "tipo": "corrente",
+            "limite": 500
+        },
+        {
+            "agencia": "0011",
             "numerodaconta": 5,
+            "senha": "1478",
+            "saldo": 0,
+            "clientes": [
+                "38615411492"
+            ],
+            "tipo": "corrente",
+            "limite": 500
+        },
+        {
+            "agencia": "0016",
+            "numerodaconta": 6,
+            "senha": "1234",
+            "saldo": 0,
+            "clientes": [
+                "79963874789"
+            ],
+            "tipo": "corrente",
+            "limite": 500
+        },
+        {
+            "agencia": "0009",
+            "numerodaconta": 7,
+            "senha": "1304",
+            "saldo": 0,
+            "clientes": [
+                "63702133062"
+            ],
+            "tipo": "poupança",
+            "taxa": 0.005,
+            "dataAbertura": "2026-09-02",
+            "ultimoRendimento": "2026-10-02"
+        },
+        {
+            "agencia": "0008",
+            "numerodaconta": 8,
+            "senha": "5678",
+            "saldo": 0,
+            "clientes": [
+                "71095208039"
+            ]
+        },
+        {
+            "agencia": "0013",
+            "numerodaconta": 9,
+            "senha": "0147",
+            "saldo": 0,
+            "clientes": [
+                "49649402330"
+            ],
+            "tipo": "poupança",
+            "taxa": 0.005,
+            "dataAbertura": "2026-09-02",
+            "ultimoRendimento": "2026-10-02"
+        },
+        {
+            "agencia": "0007",
+            "numerodaconta": 10,
+            "senha": "2587",
+            "saldo": 0,
+            "clientes": [
+                "34390952072"
+            ],
+            "tipo": "corrente",
+            "limite": 500
+        },
+        {
+            "agencia": "0004",
+            "numerodaconta": 11,
+            "senha": "1234",
+            "saldo": 0,
+            "clientes": [
+                "40009547096"
+            ],
+            "tipo": "salario",
+            "empresa": "Ayla e Joana Assessoria Jurídica Ltda",
+            "salario": 2300.0,
+            "cnpj": "75098882000179",
+            "ultimoRecebimento": null
+        },
+        {
+            "agencia": "0004",
+            "numerodaconta": 12,
+            "senha": "1234",
+            "saldo": 0,
+            "clientes": [
+                "40009547096"
+            ],
+            "tipo": "poupança",
+            "taxa": 0.005,
+            "dataAbertura": "2026-09-02",
+            "ultimoRendimento": "2026-10-02"
+        },
+        {
+            "agencia": "0011",
+            "numerodaconta": 13,
             "senha": "eunaosei",
             "saldo": 0,
             "clientes": [
@@ -85,7 +199,7 @@
         },
         {
             "agencia": "0006",
-            "numerodaconta": 6,
+            "numerodaconta": 14,
             "senha": "eunaosei",
             "saldo": 100.0,
             "clientes": [
@@ -96,7 +210,7 @@
         },
         {
             "agencia": "0014",
-            "numerodaconta": 7,
+            "numerodaconta": 15,
             "senha": "eunaosei",
             "saldo": 0,
             "clientes": [

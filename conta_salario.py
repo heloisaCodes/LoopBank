@@ -10,10 +10,10 @@ def identificar (documento): # a ideia é permitir apenas que empresas depositem
     else:
         return False
 
-cnpj = []
 
 def validarCNPJ(cnpj):  # ver se de fato é um cnpj valido
     # primeiro verifica se todos os caracteres sao numeros
+    
     for caractere in cnpj:
         if caractere < "0" or caractere > "9":
             return False
@@ -64,12 +64,14 @@ def validarCNPJ(cnpj):  # ver se de fato é um cnpj valido
 
         
  # se for CNPJ, cria a conta 
-def criarContaSalario (conta, empresa, salario):   
-   conta["tipo"] = "salario",
-   conta["empresa"] = empresa,
-   conta["salário"] = salario
+def criarContaSalario(conta, empresa="", salario=0.0, cnpj=""):   
+    conta["tipo"] = "salario"
+    conta["empresa"] = empresa
+    conta["salario"] = float(salario) if salario else 0.0
+    conta["cnpj"] = cnpj
+    conta['ultimoRecebimento'] = None
 
-   return conta
+    return conta
 
     
     # se cliente receber algo, pode pedir portabilidade, que seria a mesma logica do que ja foi feito em conta
