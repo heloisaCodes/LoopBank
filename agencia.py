@@ -1,46 +1,31 @@
-from procurar import procurarCliente
+from functools import reduce
 
-agencias = {
-    "0001": "Agencia 0001",
-    "0002": "Agencia 0002",
-    "0003": "Agencia 0003",
-    "0004": "Agencia 0004",
-    "0005": "Agencia 0005",
-    "0006": "Agencia 0006",
-    "0007": "Agencia 0007",
-    "0008": "Agencia 0008",
-    "0009": "Agencia 0009",
-    "0010": "Agencia 0010",
-    "0011": "Agencia 0011",
-    "0012": "Agencia 0012",
-    "0013": "Agencia 0013",
-    "0014": "Agencia 0014",
-    "0015": "Agencia 0015",
-    "0016": "Agencia 0016",
-    "0017": "Agencia 0017",
-    "0018": "Agencia 0018",
-    "0019": "Agencia 0019",
-    "0020": "Agencia 0020",
-}
+class Agencia:
 
+    def __init__(self, numero, clientes, contas):
+        self.numero = numero
+        self.clientes = clientes
+        self.contas = contas
 
-def cadastrar_agencia(codigo):
-    if codigo in agencias:
-        return False                                    #parametros para cadastrar a agência
-    elif len(codigo) == 4 and codigo.isdigit():
-        agencias[codigo] = "Agencia"
-        return True
-    else:
-        return False
+    def montante(self): #somar todos os saldos, como temo apenas 1 agência correponde há o saldo de todas as contas da agencia/banco
+        montante = 0
+        for conta in self.contas: #soma o saldo de cada conta
+            montante += conta.saldo
+
+        return montante
+
+    def maiorSaldo(self):
+        saldos = map(lambda conta: conta.saldo, self.contas) #pega o saldo de cada conta da lista de contas(self.contas)
+
+        return max(saldos) #retorna o maior dos saldos
+
+    def menorSaldo(self):
+        saldos = map(lambda conta: conta.saldo, self.contas) #pega o saldo de cada conta da lista de contas(self.contas)
+
+        return min(saldos) #retorna o menor dos saldos
+
+    def quantidadeClientes(self):
+        return len(self.clientes) #tamanho da lista de clientes
 
 
-def receberAgencia(clientes, cpf, agencias, contas):    #maneira de encontrar qual o valor da agencia pegando como base os 2 numeros iniciais do cpf 
-    cliente = procurarCliente(clientes, cpf)
-    if not cliente:
-        return False
-
-    soma = int(cpf[0]) + int(cpf[1])
-    for agencia in agencias:
-        if int(agencia) == soma:
-            return agencia
-    return False
+    
