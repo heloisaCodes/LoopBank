@@ -5,6 +5,41 @@ class Agencia:
         self.clientes = clientes
         self.contas = contas
 
+    
+    def adicionarCliente(self, cliente):
+       self.clientes.append(cliente) #adicona o objeto cliente criado a lista
+
+    def excluirCliente(self, cpf):
+       cliente = self.procurarCliente(cpf)
+
+       if cliente:
+           contasCliente = self.procurarContasCliente(cpf) #pega as contas do cliente
+           for conta in contasCliente: #para cada conta do cliente
+               if not conta.podeExcluir(): #verifica se pode excluir
+                   return False #se não puder, o cliente não é excluido
+
+           for conta in contasCliente: #se puder, segue e o cliente é excluido
+            self.contas.remove(conta) #sai da lista contas
+            self.clientes.remove(cliente) #sai da lista clientes
+                    
+            return True
+
+       else:
+           return False
+
+    def editarCliente(self, cpf, novoNome):
+       cliente = self.procurarCliente(self, cpf)
+
+       if cliente:
+          cliente.editarNome(novoNome) #altera o nome do cliente especifico, pelo método de cliente que altera o nome de um objeto qualquer
+          return True
+
+       return False
+
+
+    def adicionarConta(self, conta):
+        self.contas.append(conta)
+
 
 #RELATORIO
 
