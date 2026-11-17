@@ -20,7 +20,7 @@ class Conta:
         return cls(cliente, cpf, numeroConta, senha=senha, saldo=0.0)
    
     @classmethod
-    def excluirConta(cls, numeroConta):                 #metodo para excluir a conta precisa do prefixo cls. pois é um dicionario
+    def podeExcluir(cls, numeroConta):                 #metodo para excluir a conta precisa do prefixo cls. pois é um dicionario
         if numeroConta in cls.contasCadastradas:        #que pertence a classe
             del cls.contasCadastradas[numeroConta]
             return True
