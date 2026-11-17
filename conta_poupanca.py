@@ -1,56 +1,34 @@
-from datetime import date  
-import conta as modulo_conta  #apelido pra não confundir com a variavel "conta" (o dicionario)
-
-def criarContaPoupanca(conta):
-    conta['tipo'] = 'poupança' #adicionando o tipo da conta
-    #e suas propiedades unicas
-    conta['taxa'] = 0.005 
-    conta['dataAbertura'] = '2026-09-02'
-    conta['ultimoRendimento'] = '2026-10-02'
-
-    return conta
-
-def rendimento(conta): #calcula o rendimento
-    aumento = conta['saldo'] * conta['taxa'] #calcula o aumento
-    conta['saldo'] = round(conta['saldo'] + aumento, 2)   #o round pra evitar o saldo com várias casas
-    #nessa parte tbm soma o aumento a conta
-
-    return conta['saldo']
-
-def verificarRendimento(conta):
-    hoje = date.today() #pega a data de hoje graças a biblioteca
-    ultimoRendimento = date.fromisoformat(conta['ultimoRendimento'])   #antes era date.isoformat, ele recebia um objeto de data, mas está sendo passado um texto
-   #por isso foi trocado para date.fromisoformat, que ja transforma '2026-10-02' em data
-
-    dias = (hoje - ultimoRendimento).days #calcula quantos dias se passaram desde o ultimo rendimento
+from datetime import date              #importa a classe date para termos datas
+from conta import Conta                #importa a classe conta 
 
 
-    if dias >= 30:  #se passou um mês ou mais
-        rendimento(conta)  #pega o saldo com o aumento do rendimento
-        conta['ultimoRendimento'] = hoje.isoformat() # e coloca o dia atual como o ultimo rendimento
+class ContaPoupanca(Conta):            #cria a classe conta poupanca herdando conta
+    def __init__(self, cliente, cpf, numeroConta, senha=None, saldo=0.0, taxa=0.005, dataAbertura=None):  #construção da classe 
+        super().__init__(cliente, cpf, numeroConta, senha=senha, saldo=saldo)
+        self.tipo = 'poupança'                                                       #definicao do tipo da conta
+        self.taxa = taxa                                                             
+        hoje_iso = date.today().isoformat()                                          
+        self.dataAbertura = dataAbertura if dataAbertura else hoje_iso               #utilizacao da data informada ou data de hoje
+        self.ultimoRendimento = self.dataAbertura                                    #definicao da data inicial para saber o rendimento da poupanca
 
-    return conta
+    def exibirInfo(self):                                                            #metodo para exibir informacoes
+        super().exibirInfo()
+        print(f"Tipo: {self.tipo}")
+        print(f"Taxa de Rendimento: {self.taxa * 100:.2f}%")
+        print(f"Último Rendimento: {self.ultimoRendimento}")
 
-#aqui adiciona as operaçoes
-def deposito(conta, valor):
-    if valor <= 0:                  # não aceita zero ou negativo
+    def rendimento(self):                                         
+        aumento = self.saldo * self.taxa                           #calculo do rendimento 
+        self.saldo = round(self.saldo + aumento, 2)                #soma com o saldo e arredonda o valor 
+        return self.saldo                                          #retorna o saldo atualizado 
+
+    def verificarRendimento(self):                                   #metodo para ver se o tempo ja é suficiente para render 
+        hoje = date.today()                                         
+        ultimo_rendimento_data = date.fromisoformat(self.ultimoRendimento)            
+        dias = (hoje - ultimo_rendimento_data).days                                #calculo da diferenca de dias desde o ultimo rendimento
+
+        if dias >= 30:                                                       #verificacao se chegou em 30 dias ou mais 
+            self.rendimento()                                               #adiciona o rendimento no saldo
+            self.ultimoRendimento = hoje.isoformat()                        #atualiza a data 
+            return True                                                     #retorna True se teve rendimento e False caso contrario 
         return False
-     #aqui é a mesma logica da função deposito de conta.py, pra nao repetir a regra
-    conta['saldo'] = modulo_conta.deposito(conta['saldo'], valor)
-    return True
-
-
-def saque(conta, valor):
-    # poupança nao tem limite, ela só pode sacar até o saldo
-    if valor <= 0 or valor > conta['saldo']:
-        return False
-    conta['saldo'] = round(conta['saldo'] - valor, 2)
-    return True
-
-
-def transferir(conta, conta_destino, valor):
-    if valor <= 0 or valor > conta['saldo']:    #mesma regra do saque,  não pode passar do saldo
-        return False
-    conta['saldo'] = round(conta['saldo'] - valor, 2)   # tira da conta de origem e coloca na de destino
-    conta_destino['saldo'] = round(conta_destino['saldo'] + valor, 2)
-    return True

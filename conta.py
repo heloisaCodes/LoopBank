@@ -1,95 +1,61 @@
-def criar_conta(numerodaconta, senha, cpf, agencia, saldo=0):
-    clientes = [] # clientes precisa ser lista
-    clientes.append(cpf)
+class Conta:
 
-    # conta agora vira dicionário
-    conta = {
-            "agencia": agencia,
-            "numerodaconta": numerodaconta,
-            "senha": senha,
-            "saldo": saldo,
-            "clientes": clientes
-               }
-            
-    return conta
+    contasCadastradas = {} #atributo de classe
+   
+    def __init__(self, cliente, cpf, numeroConta, senha=None, saldo=0.0): #construcao da classe com poo
+        self.cliente = cliente
+        self.cpf = cpf
+        self.numeroConta = numeroConta
+        self.__senha = senha
+        self.saldo = saldo
 
-def excluirContasSemCliente(contasCliente, cpf):
-    for conta in contasCliente:  #para cada conta do cliente
-        if cpf in conta['clientes']:  #se o cpf do cliente estiver na lista de clientes da conta
-            conta['clientes'].remove(cpf) #remove o cliente da conta
+    def exibirInfo(self):                             #metodo para exibir as info sem exibir a senha
+        print(f"Nome:{self.cliente}")
+        print(f"Cpf:{self.cpf}")
+        print(f"Numero da Conta:{self.numeroConta}")
+        print(f"Saldo: R${self.saldo:.2f}")
 
-    for conta in contasCliente[:]: #pecorre a copia
-        if len(conta['clientes']) == 0: #se a conta nao tiver mais clientes
-            contasCliente.remove(conta) #apaga a conta do cliente da lista geral de contas
-
-    return contasCliente
-
-def cadastrarConta(contas, senha, cpf, agencia, saldo=0):  # ou seja, pega a conta e coloca ela na lista geral de contas
-    if len(contas) == 0:     # se nao existe nehuma conta cadastrada ainda
-         numerodaconta = 1   # entao ela vai ser a primeira conta
-    else:
-        maior = 0
-        for conta in contas:
-            if type(conta) == dict and "numerodaconta" in conta:
-                if int(conta["numerodaconta"]) > maior:
-                    maior = int(conta["numerodaconta"])
-
-        numerodaconta = maior + 1 
-
-            # ou seja, nessa parte ele vai percorrer toda a lista e achar o MAIOR valor do numero da conta
-            # depois, ele pega esse valor do MAIOR e soma com +1, o resultado é o proximo numero da conta
-
-     # aqui cria uma nova conta
-    conta = criar_conta(numerodaconta, senha, cpf, agencia, saldo=0)
-    # coloca ela na lista geral
-    contas.append(conta)
-    return True  # pra saber se o cadastro deu certo
-
-    
-
-# aqui vamos ver se a senha e a agencia digitadas estão corretas
-def autenticar(conta, senhadigitada):
-    if conta["senha"] != senhadigitada:   
+    @classmethod
+    def criarConta(cls, cliente, cpf, numeroConta, senha=None):       #metodo para criar conta com construtor alternativo
+        return cls(cliente, cpf, numeroConta, senha=senha, saldo=0.0)
+   
+    @classmethod
+    def excluirConta(cls, numeroConta):                 #metodo para excluir a conta precisa do prefixo cls. pois é um dicionario
+        if numeroConta in cls.contasCadastradas:        #que pertence a classe
+            del cls.contasCadastradas[numeroConta]
+            return True
         return False
-    else:                          # ou seja, se nenhuma delas estiver errada, vai ser retornado True
-        return True   
+       
+    @classmethod
+    def listarContas(cls):                    #lista as contas
+        return cls.contasCadastradas
+       
+    def cadastrarConta(self):
+        if self.numeroConta in Conta.contasCadastradas: #aqui retorna False se a conta ja esta cadastrada e adiciona se ainda nao esta
+            return False
+        else:
+            Conta.contasCadastradas[self.numeroConta] = self
+            return True
 
-    
-# pra nao permitir sacar mais dinheiro do que o que tiver
-def saque(saldoatual, valordosaque):    
-    if saldoatual < valordosaque:        # se o saldo for menor que  o valor do saque
-        return saldoatual                # ent retorna o saldo atual
-    else:
-        return saldoatual - valordosaque  # caso nao, retorna o saldo MENOS o valor do saque
-
-
-# nao permite depósito de valor 0 ou negativo 
-def deposito(saldoatual, valordodeposito):
-    if valordodeposito <= 0:
-        return saldoatual
-    else:
-        return saldoatual + valordodeposito
-
-
-def listarContas(contas): 
-    # apenas retorna a lista de contas
-    return contas
-
-
-def transferir(contaOrigem, contaDestino, valor):
-    # ver se existe saldo suficiente
-    if contaOrigem["saldo"] < valor:
+    def sacar(self, valorSaque):                      
+        if self.saldo < valorSaque or valorSaque <= 0: #retorna False se o valor do saque for maior que o saldo ou saque = 0
+            return False
+        else:
+            self.saldo -= valorSaque                  #reduz o valor do saque do saldo da conta e retorna True
+            return True
+           
+    def depositar(self, valorDeposito):              
+        if valorDeposito < 0.01:                     #valor minimo para deposito é de 1 centavo, caso seja menor retora False
+            return False
+        else:
+             self.saldo += valorDeposito             #adiciona o valor do deposito
+             return True
+           
+    def transferir(self, contaDestino, valor):      
+        if self.sacar(valor):                        #utiliza o metodo sacar como forma de reduzir o saldo
+            contaDestino.depositar(valor)            #utiliza o metodo de depositar para poder transferir para a conta destino
+            return True
         return False
-
-    # como a conta agora é de dicionarios, ent calculamos apenas os novos saldos
-    novoSaldoOrigem = contaOrigem["saldo"] - valor
-    novoSaldoDestino = contaDestino["saldo"] + valor
-
-    # agora esses novos valores voltam pro dicionario
-    contaOrigem["saldo"] = novoSaldoOrigem
-    contaDestino["saldo"] = novoSaldoDestino
-    # retorna esses valores
-    return contaOrigem, contaDestino
-
-
-
+       
+    def autenticar(self, senhaDigitada):             #verifica se a senha digitada esta correta
+        return self.__senha == senhaDigitada
