@@ -287,160 +287,178 @@ def editarNome():
 
 
 
+
+# cada tipo de conta aponta pra sua classe
+# assim, na hora de criar a conta, nao precisa de um monte de if 
+CLASSE_POR_TIPO = {
+    'corrente': ContaCorrente,
+    'poupanca': ContaPoupanca
+
+}
+
+# FUNÇÕES AUXILIARES
+
+def normalizarTipo(tipo):
+    # tipo "Poupança" vira "poupanca"
+    tipo = (tipo or '').lower()
+    return tipo.replace('á', 'a').replace('ç', 'c')
+
+
+def lerValor(texto):
+    # transforma o que a pessoa digitou em número, tipo '1.250,50' vira 1250.5
+    texto = (texto or '').strip().replace('R$', '').replace(' ', '')   # tira o R$ e os espacos
+
+    if ',' in texto:                                  # formato brasileiro
+        texto = texto.replace('.', '').replace(',', '.')
+
+    try:
+        valor = float(texto)
+    except ValueError:                                # digitou letras, por exemplo
+        return None
+
+    if not math.isfinite(valor):                      # bloqueia "nan" e "inf"
+        return None
+
+    return round(valor, 2)                            # arredonda pra 2 casas decimais, por conta dos centavos
+
+
+def gerarNumeroConta():  # gera o numero da proxima conta, o maior numero que ja existe + 1
+    # default=0 faz funcionar tambem quando ainda nao tem nenhuma conta (ent a primeira vira 1)
+    return max((conta.numeroConta for conta in agencia.contas), default=0) + 1
+
+
+def buscarContaDoCliente(cpf, numeroConta):  # procura, entre as contas daquele cpf, a que tem o número informado
+    for c in agencia.procurarContasCliente(cpf):      # percorre as contas da agencia
+        if c.cpf == cpf and str(c.numeroConta) == str(numeroConta):   # str() porque o numero da URL vem como texto
+            return c                                              # achou: devolve o objeto conta
+    return None                                                   # nao achou
+    
+
+
+def valorDisponivel(conta):  # quanto a pessoa pode movimentar na conta (antes era o DISPONIVEL_POR_TIPO)
+    # na corrente é saldo + limite (ex: saldo 100 + limite 500 = 600), na poupanca é so o saldo
+    if hasattr(conta, 'limite_disponivel'):       # só a ContaCorrente tem esse método
+        return conta.limite_disponivel()
+    return conta.saldo
+
+
+
+# ROTAS
+
+@app.route('/editar_cliente', methods=['GET', 'POST'])
+def editarNome():
+    if request.method == 'POST':
+        cpf = request.form.get('cpf')        #pega os dados
+        novoNome = request.form.get('nome')
+
+        resultado = editarCliente(clientes, cpf, novoNome) #chama a função
+
+        if resultado: #se a edição foi bem sucedida
+            salvar_dados({
+                'clientes': clientes,  #salva as alterações
+                'contas': contas
+            })
+
+        
+    numeroConta = request.form.get('numerodaconta') #pega o numero da conta
+
+    return redirect(url_for(
+        'areaCliente',             #fica na pagina do cliente, mas com o nome editado
+        cpf=cpf,
+        numerodaconta=numeroConta
+    ))
+
+
+
 @app.route('/nova_conta', methods=['GET', 'POST'])
 def criarNovaConta():
-    cpf = request.args.get('cpf') #pega o cpf da URL
-    cliente = procurarCliente(clientes, cpf) #cliente associado ao cpf
+    cpf = request.args.get('cpf')                 # pega o cpf da URL
+    cliente = agencia.procurarCliente(cpf)        # devolve o objeto Cliente (ou False se nao achar)
 
-    if request.method == 'GET':
+    if not cliente:                               # cpf que nao existe na agencia
+        return render_template('nova_conta.html', cliente=None, erro='Cliente não encontrado.')
+
+    if request.method == 'GET':                   # so abriu a pagina: mostra o formulario
         return render_template('nova_conta.html', cliente=cliente)
 
-    tipo = request.form.get('tipo_conta')
+    tipo = normalizarTipo(request.form.get('tipo_conta'))    # tipo escolhido
     senha = request.form.get('senha')
     confirmarSenha = request.form.get('confirmar_senha')
 
-    if senha != confirmarSenha: #verifica se a senha é a mesma nos dois campos
+    if senha != confirmarSenha:                   # verifica se a senha é a mesma nos dois campos
         return render_template(
             'nova_conta.html',
             cliente=cliente,
-            erro='As senhas não coincidem.'
+            erro='As senhas não coincidem'
         )
 
-    agencia = receberAgencia(clientes, cpf, agencias, contas) #pega a agencia
-    contaCriada = cadastrarConta(contas, senha, cpf, agencia) #criaa uma conta cm essa agencia
+    if tipo not in CLASSE_POR_TIPO:               # tipo invalido, pois o antigo "salario" nao existe mais
+        return render_template(
+            'nova_conta.html',
+            cliente=cliente,
+            erro='Tipo de conta inválido'
+        )
 
-    if contaCriada: #cria a conta do tipo
-        novaConta = contas[-1]
+    classeConta = CLASSE_POR_TIPO[tipo]           # pega a classe certa (ContaCorrente ou ContaPoupanca)
+    numero = gerarNumeroConta()                   # numero novo pra conta
 
-        if tipo == 'corrente':
-            criarContaCorrente(novaConta)
-        elif tipo == 'poupança':
-            criarContaPoupanca(novaConta)
-        elif tipo == 'salario':
-            criarContaSalario(novaConta, empresa="", salario=0.0, cnpj="" )
+    # cria o OBJETO da conta já do tipo certo
+    #antes eram 2 passos: cadastrarConta e depois criarContaCorrente/criarContaPoupanca
+    # a Conta recebe "cliente" e "cpf" separados e imprime o "cliente" como nome
+    # por isso aqui passo cliente.nome se a conta passar a guardar o objeto Cliente
+    novaConta = classeConta(cliente.nome, cpf, numero, senha=senha)
 
-        salvar_dados({
-            'clientes': clientes, #salva os dados
-            'contas': contas
-        })
+    agencia.adicionarConta(novaConta)             # coloca a conta na lista de contas da agência
 
-        return redirect(url_for(
-            'areaCliente',
-            cpf=cpf,                                 #vai para a area do cliente
-            numerodaconta=novaConta['numerodaconta']
-        ))
 
-    return render_template(
-        'nova_conta.html',
-        cliente=cliente,
-        erro='Não foi possível criar a conta.'
-    )
+    return redirect(url_for(
+        'areaCliente',
+        cpf=cpf,                                  # vai para a area do cliente
+        numerodaconta=novaConta.numeroConta       # agora é atributo do objeto, nao mais chave de dicionario
+    ))
 
 
 @app.route("/gerente/dashboard")
 def dashboard_gerente():
-    
-    dados_arquivo = carregar_dados()                     #carrega os dados do json
+    # NAO carrega mais o json aqui, porque os dados ja estao na agencia, em memória
 
-    
-    clientes = dados_arquivo.get("clientes", [])        #pega as listas atuais do sistema
-    contas = dados_arquivo.get("contas", [])
+    # usar agencia.clientes e agencia.contas, também trocar conta['saldo'] por conta.saldo
+    indicadores = gerarDashboard(agencia)         # faz os calculos
 
-    
-    indicadores = gerarDashboard(clientes, contas)          #faz os calculos
-
-                                                            #envia os resultados do python para o HTML
+    # envia os resultados do python para o HTML
     return render_template(
         "dashboard.html",
         dados=indicadores
     )
 
 
-@app.route('/relatorio')   #rota de relatorio
-#carrega os dados salvos e pega a lista de contas
+@app.route('/relatorio')   # rota de relatorio
 def pagina_relatorio():
-    dados_relatorio = carregar_dados()
-    contas_relatorio = dados_relatorio.get('contas', [])
 
-    #calcula os numeros do resumo do banco
-    montante_banco = montanteBanco(contas_relatorio)  #soma de todos os saldos
-    maior_saldo = maiorSaldo(contas_relatorio)        #maior saldo entre as contas
-    menor_saldo = menorSaldo(contas_relatorio)        #menor saldo entre as contas
-
-    #calcula, por agencia, a quantidade de clientes e o montante
-    #o montante é o que vira o tamanho de cada barra no grafico
-    if agencias:
-        resultados_agencias, agencia_maior = montanteAgencia(
-            contas_relatorio, agencias
-        )
+    if agencia.contas:
+        montante_banco = agencia.montante()       # soma de todos os saldos
+        maior_saldo = agencia.maiorSaldo()        # maior saldo entre as contas
+        menor_saldo = agencia.menorSaldo()        # menor saldo entre as contas
     else:
-        resultados_agencias = []   #sem agencias cadastradas, o relatorio mostra as mensagens de "vazio"
-        agencia_maior = None
+        montante_banco = 0
+        maior_saldo = 0
+        menor_saldo = 0
 
-    #manda tudo pra o gerente.html desenhar a pagina
+    # por enquanto mando vazio so pra nao quebrar o gerente.html
+    resultados_agencias = []
+    agencia_maior = None
+
+    # manda tudo pro gerente.html desenhar a pagina
     return render_template(
         'gerente.html',
         montante_banco=montante_banco,
         maior_saldo=maior_saldo,
         menor_saldo=menor_saldo,
+        total_clientes=agencia.quantidadeClientes(),   # metodo que já existe na agencia
         resultados_agencias=resultados_agencias,
         agencia_maior=agencia_maior
     )
 
-
-
-DEPOSITO_POR_TIPO = {
-    'corrente': depositoCorrente,
-    'poupanca': depositoPoupanca
-}
-
-SAQUE_POR_TIPO = {
-    'corrente': saqueCorrente,
-    'poupanca': saquePoupanca,
-}
- 
-TRANSFERENCIA_POR_TIPO = {
-    'corrente': transferirCorrente,
-    'poupanca': transferirPoupanca,
-}
- 
-# quanto a pessoa pode movimentar em cada tipo de conta
-# na corrente é saldo + limite (ex: saldo 100 + limite 500 = 600)
-DISPONIVEL_POR_TIPO = {
-    'corrente': limite_disponivel,
-}
- 
- 
-def normalizarTipo(tipo):
-    # deixa o tipo em minusculo e sem acento, tipo 'Salário' vira 'salario'
-    tipo = (tipo or '').lower()
-    return tipo.replace('á', 'a').replace('ç', 'c')
- 
- 
-def lerValor(texto):
-    # transforma o que a pessoa digitou em número, tipo '1.250,50' vira 1250.5
-    texto = (texto or '').strip().replace('R$', '').replace(' ', '')
- 
-    if ',' in texto:                                  # formato brasileiro
-        texto = texto.replace('.', '').replace(',', '.')
- 
-    try:
-        valor = float(texto)
-    except ValueError:                                # digitou letras, por exemplo
-        return None
- 
-    if not math.isfinite(valor):                      # bloqueia "nan" e "inf"
-        return None
- 
-    return round(valor, 2)
- 
- 
-def buscarContaDoCliente(cpf, numeroConta):
-    # procura, entre as contas daquele cpf, a que tem o número informado
-    for c in procurarPorCpf(contas, cpf):
-        if str(c['numerodaconta']) == str(numeroConta):
-            return c
-    return None
 
 
 #FUNÇÕES PARA A CONTA POUPANÇA
