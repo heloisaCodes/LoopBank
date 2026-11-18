@@ -13,7 +13,7 @@ class Agencia:
        cliente = self.procurarCliente(cpf)
 
        if cliente:
-           contasCliente = self.procurarContasCliente(cpf) #pega as contas do cliente
+           contasCliente = self.procurarPorCpf(cpf) #pega as contas do cliente
            for conta in contasCliente: #para cada conta do cliente
                if not conta.podeExcluir(): #verifica se pode excluir
                    return False #se não puder, o cliente não é excluido
@@ -29,7 +29,7 @@ class Agencia:
            return False
 
     def editarCliente(self, cpf, novoNome):
-       cliente = self.procurarCliente(self, cpf)
+       cliente = self.procurarCliente(cpf)
 
        if cliente:
           cliente.editarNome(novoNome) #altera o nome do cliente especifico, pelo método de cliente que altera o nome de um objeto qualquer
@@ -38,7 +38,7 @@ class Agencia:
        return False
 
 
-    def adicionarConta(self, conta):
+    def adicionarConta(self, conta): #adiciona o objeto conta a lista
         self.contas.append(conta)
 
 
@@ -65,13 +65,36 @@ class Agencia:
     def quantidadeClientes(self):
         return len(self.clientes) #quantidade de clientes na lista de clientes
 
+    def quantidadeContas(self): 
+        return len(self.contas) #quantidade de contas na lista de contas
+
+    def saldoMedio(self):
+        if not self.contas:
+            return 0
+        
+        return self.montante / self.quantidadeContas #basicamente uma média total/quantidade
+
+
+#DASHBOARD
+    def gerarDashboard(self): #junta todas as informações dos métodos em um lugar só
+        dashboard = { 
+        'totalClientes': self.quantidadeClientes(),
+        'totalContas': self.quantidadeContas(),
+        'totalSaldo': self.montante(),
+        'maiorSaldo': self.maiorSaldo(),
+        'saldoMedio': self.saldoMedio()
+    }
+
+        return dashboard
+    
+
 #LISTA E BUSCA
 
-    def listarClientes(self):
+    def listarClientes(self): #lista clientes
         return self.clientes 
 
 
-    def listarContas(self):
+    def listarContas(self): #lista contas
         return self.contas
     
 
@@ -80,7 +103,7 @@ class Agencia:
 
         return contasPositivas
 
-    def procurarCliente(self, cpf):
+    def procurarCliente(self, cpf): #procura um determinado cliente
         for cliente in self.clientes:
             if cliente.cpf == cpf:
                 return cliente
@@ -88,18 +111,10 @@ class Agencia:
         return False
 
     #procura as contas do cliente
-    def procurarPorCpf(self, cpf):
+    def procurarPorConta(self, cpf): #procura uma determinada conta
         contasCliente = [] 
         for conta in self.contas:                  
             if cpf == conta.titular: 
                 contasCliente.append(conta)
 
         return contasCliente
-
-
-    def procurarPorConta(contas, numerodacontadigitado):
-        for conta in contas:                                    
-            if numerodacontadigitado == conta.numerodaconta:
-                return conta 
-            
-        return False
