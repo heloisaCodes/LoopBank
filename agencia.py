@@ -19,10 +19,11 @@ class Agencia:
                    return False #se não puder, o cliente não é excluido
 
            for conta in contasCliente: #se puder, segue e o cliente é excluido
-            self.contas.remove(conta) #sai da lista contas
-            self.clientes.remove(cliente) #sai da lista clientes
+               self.contas.remove(conta) #sai da lista contas
+            
+           self.clientes.remove(cliente) #sai da lista clientes
                     
-            return True
+           return True
 
        else:
            return False
@@ -87,7 +88,7 @@ class Agencia:
         return False
 
     #procura as contas do cliente
-    def procurarPorConta(self, cpf):
+    def procurarPorCpf(self, cpf):
         contasCliente = [] 
         for conta in self.contas:                  
             if cpf == conta.titular: 

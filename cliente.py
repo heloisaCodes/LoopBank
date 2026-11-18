@@ -20,7 +20,7 @@ class Cliente:
     # @classmethod porque ainda não existe objeto quando chamamos
     @classmethod
     def deDicionario(cls, dados):  # "cls" é no caso a própria classe 
-        return cls(dados["nome"], dados["cpf"]) # ent ele cria um cliente novo a partir dos dados do dicionário
+        return cls(dados["cpf"], dados["nome"]) # ent ele cria um cliente novo a partir dos dados do dicionário
 
 
     # precisa do self porque muda os dados DESTE cliente
